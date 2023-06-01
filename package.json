@@ -1,0 +1,12 @@
+{
+  "name": "zora-rewards",
+  "version": "0.0.0",
+  "main": "",
+  "repository": "https://github.com/ourzora/zora-rewards.git",
+  "author": "",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.0"
+  }
+}
