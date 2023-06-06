@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.19;
+pragma solidity 0.8.17;
 
 interface IZoraRewards {
     event RewardsAdded(bytes4 indexed rewardType, address recipient, uint256 amount);
