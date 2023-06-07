@@ -32,7 +32,7 @@ abstract contract MintRewards is IMintRewards {
     }
 
     function computeFreeMintRewards(uint256 numTokens)
-        internal
+        public
         pure
         returns (
             uint256 totalReward,
@@ -50,7 +50,7 @@ abstract contract MintRewards is IMintRewards {
     }
 
     function computePaidMintRewards(uint256 numTokens)
-        internal
+        public
         pure
         returns (uint256 totalReward, uint256 zoraReward, uint256 finderReward, uint256 listerReward)
     {
