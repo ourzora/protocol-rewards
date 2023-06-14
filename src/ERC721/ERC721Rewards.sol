@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
 import { MintRewards } from "../common/MintRewards.sol";
@@ -59,7 +59,7 @@ abstract contract ERC721Rewards is MintRewards {
                 listerReward
             );
 
-            (bool success,) = creator.call{ value: creatorReward, gas: 5000 }(""); // TODO update hardcoded gas limit
+            (bool success,) = creator.call{ value: creatorReward, gas: 5000 }("");
 
             if (!success) {
                 revert CREATOR_REWARD_TRANSFER_FAILED();

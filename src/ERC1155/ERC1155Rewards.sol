@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
 import { MintRewards } from "../common/MintRewards.sol";
@@ -16,7 +16,7 @@ abstract contract ERC1155Rewards is MintRewards {
         address finder,
         address lister
     ) internal returns (uint256) {
-        uint256 totalReward = numTokens * TOTAL_REWARD_PER_MINT;
+        uint256 totalReward = computeTotalReward(numTokens);
 
         if (msgValue < totalReward) {
             revert INSUFFICIENT_ETH_FOR_REWARDS();
@@ -29,7 +29,9 @@ abstract contract ERC1155Rewards is MintRewards {
         } else {
             _handlePaidMintRewards(numTokens, finder, lister);
 
-            return msgValue - totalReward;
+            unchecked {
+                return msgValue - totalReward;
+            }
         }
     }
 
@@ -58,7 +60,7 @@ abstract contract ERC1155Rewards is MintRewards {
                 listerReward
             );
 
-            (bool success,) = creator.call{ value: creatorReward, gas: 5000 }(""); // TODO update hardcoded gas limit
+            (bool success,) = creator.call{ value: creatorReward, gas: 5000 }("");
 
             if (!success) {
                 revert CREATOR_REWARD_TRANSFER_FAILED();

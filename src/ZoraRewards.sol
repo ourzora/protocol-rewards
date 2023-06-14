@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -128,15 +128,23 @@ contract ZoraRewards is IZoraRewards, ERC20 {
         }
     }
 
-    // TODO reverts
+    function approve(address, uint256) public pure override returns (bool) {
+        return false;
+    }
 
-    function approve(address spender, uint256 amount) public override returns (bool) { }
+    function transfer(address, uint256) public pure override returns (bool) {
+        return false;
+    }
 
-    function transfer(address to, uint256 amount) public override returns (bool) { }
+    function transferFrom(address, address, uint256) public pure override returns (bool) {
+        return false;
+    }
 
-    function transferFrom(address from, address to, uint256 amount) public override returns (bool) { }
+    function increaseAllowance(address, uint256) public pure override returns (bool) {
+        return false;
+    }
 
-    function increaseAllowance(address spender, uint256 addedValue) public override returns (bool) { }
-
-    function decreaseAllowance(address spender, uint256 subtractedValue) public override returns (bool) { }
+    function decreaseAllowance(address, uint256) public pure override returns (bool) {
+        return false;
+    }
 }

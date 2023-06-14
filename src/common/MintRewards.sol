@@ -31,6 +31,16 @@ abstract contract MintRewards is IMintRewards {
         ZORA_REWARD_RECIPIENT = _zoraRewardRecipient;
     }
 
+    function computeTotalReward(uint256 numTokens) public pure returns (uint256) {
+        return numTokens * TOTAL_REWARD_PER_MINT;
+    }
+
+    function computeTotalValue(uint256 numTokens, uint256 salePrice) public pure returns (uint256) {
+        uint256 totalReward = computeTotalReward(numTokens);
+        uint256 totalSale = numTokens * salePrice;
+        return totalReward + totalSale;
+    }
+
     function computeFreeMintRewards(uint256 numTokens)
         public
         pure
@@ -42,7 +52,7 @@ abstract contract MintRewards is IMintRewards {
             uint256 listerReward
         )
     {
-        totalReward = numTokens * TOTAL_REWARD_PER_MINT;
+        totalReward = computeTotalReward(numTokens);
         creatorReward = numTokens * CREATOR_REWARD_FREE_MINT;
         zoraReward = numTokens * ZORA_REWARD_FREE_MINT;
         finderReward = numTokens * FINDER_REWARD_FREE_MINT;
@@ -54,7 +64,7 @@ abstract contract MintRewards is IMintRewards {
         pure
         returns (uint256 totalReward, uint256 zoraReward, uint256 finderReward, uint256 listerReward)
     {
-        totalReward = numTokens * TOTAL_REWARD_PER_MINT;
+        totalReward = computeTotalReward(numTokens);
         zoraReward = numTokens * ZORA_REWARD_PAID_MINT;
         finderReward = numTokens * FINDER_REWARD_PAID_MINT;
         listerReward = numTokens * LISTER_REWARD_PAID_MINT;
