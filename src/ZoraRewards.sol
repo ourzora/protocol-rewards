@@ -127,24 +127,4 @@ contract ZoraRewards is IZoraRewards, ERC20 {
             revert TRANSFER_FAILED();
         }
     }
-
-    function approve(address, uint256) public pure override returns (bool) {
-        return false;
-    }
-
-    function transfer(address, uint256) public pure override returns (bool) {
-        return false;
-    }
-
-    function transferFrom(address, address, uint256) public pure override returns (bool) {
-        return false;
-    }
-
-    function increaseAllowance(address, uint256) public pure override returns (bool) {
-        return false;
-    }
-
-    function decreaseAllowance(address, uint256) public pure override returns (bool) {
-        return false;
-    }
 }
