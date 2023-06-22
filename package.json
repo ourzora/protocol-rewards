@@ -10,7 +10,7 @@
     "prepack": "mkdir -p dist && cp -r src/ dist/contracts && cp -r addresses/ dist/addresses && cp -r out/ dist/artifacts/"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.9.0"
+    "@openzeppelin/contracts": "^4.9.2"
   },
   "devDependencies": {}
 }
