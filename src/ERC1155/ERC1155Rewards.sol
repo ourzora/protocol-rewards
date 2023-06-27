@@ -20,9 +20,7 @@ abstract contract ERC1155Rewards is MintRewards {
 
         if (msgValue < totalReward) {
             revert INSUFFICIENT_ETH_FOR_REWARDS();
-        }
-
-        if (msgValue == totalReward) {
+        } else if (msgValue == totalReward) {
             _handleFreeMintRewards(numTokens, creator, finder, lister);
 
             return 0;
@@ -36,7 +34,7 @@ abstract contract ERC1155Rewards is MintRewards {
     }
 
     function _handleFreeMintRewards(uint256 numTokens, address creator, address finder, address lister) private {
-        (uint256 totalReward, uint256 creatorReward, uint256 zoraReward, uint256 finderReward, uint256 listerReward) =
+        (uint256 totalReward, uint256 creatorReward, uint256 finderReward, uint256 listerReward, uint256 zoraReward) =
             computeFreeMintRewards(numTokens);
 
         if (finder == address(0)) {
@@ -47,45 +45,13 @@ abstract contract ERC1155Rewards is MintRewards {
             lister = ZORA_REWARD_RECIPIENT;
         }
 
-        if (creator != address(0)) {
-            totalReward -= creatorReward;
-
-            ZORA_REWARDS.deposit{ value: totalReward }(
-                ZORA_FREE_MINT_REWARD_TYPE,
-                ZORA_REWARD_RECIPIENT,
-                zoraReward,
-                finder,
-                finderReward,
-                lister,
-                listerReward
-            );
-
-            (bool success,) = creator.call{ value: creatorReward, gas: 5000 }("");
-
-            if (!success) {
-                revert CREATOR_REWARD_TRANSFER_FAILED();
-            }
-        } else {
-            ZORA_REWARDS.deposit{ value: totalReward }(
-                ZORA_FREE_MINT_REWARD_TYPE,
-                creator,
-                creatorReward,
-                ZORA_REWARD_RECIPIENT,
-                zoraReward,
-                finder,
-                finderReward,
-                lister,
-                listerReward
-            );
-        }
-
-        emit FreeMintRewards(
+        ZORA_REWARDS.depositFreeMintRewards{ value: totalReward }(
             creator, creatorReward, finder, finderReward, lister, listerReward, ZORA_REWARD_RECIPIENT, zoraReward
         );
     }
 
     function _handlePaidMintRewards(uint256 numTokens, address finder, address lister) private {
-        (uint256 totalReward, uint256 zoraReward, uint256 finderReward, uint256 listerReward) =
+        (uint256 totalReward, uint256 finderReward, uint256 listerReward, uint256 zoraReward) =
             computePaidMintRewards(numTokens);
 
         if (finder == address(0)) {
@@ -96,10 +62,8 @@ abstract contract ERC1155Rewards is MintRewards {
             lister = ZORA_REWARD_RECIPIENT;
         }
 
-        ZORA_REWARDS.deposit{ value: totalReward }(
-            ZORA_PAID_MINT_REWARD_TYPE, ZORA_REWARD_RECIPIENT, zoraReward, finder, finderReward, lister, listerReward
+        ZORA_REWARDS.depositPaidMintRewards{ value: totalReward }(
+            finder, finderReward, lister, listerReward, ZORA_REWARD_RECIPIENT, zoraReward
         );
-
-        emit PaidMintRewards(finder, finderReward, lister, listerReward, ZORA_REWARD_RECIPIENT, zoraReward);
     }
 }
