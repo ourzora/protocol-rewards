@@ -6,117 +6,94 @@ import { ERC20, ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensio
 import { IZoraRewards } from "./interfaces/IZoraRewards.sol";
 
 contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
-    bytes4 public constant ZORA_FREE_MINT_REWARD_TYPE = bytes4(keccak256("ZORA_FREE_MINT_REWARD"));
-    bytes4 public constant ZORA_PAID_MINT_REWARD_TYPE = bytes4(keccak256("ZORA_PAID_MINT_REWARD"));
-
     constructor(string memory tokenName, string memory tokenSymbol)
         payable
         ERC20(tokenName, tokenSymbol)
         ERC20Permit(tokenName)
     { }
 
-    function deposit(bytes4 rewardType, address recipient) external payable {
+    function deposit(address recipient, string calldata comment) external payable {
         _mint(recipient, msg.value);
 
-        emit ZoraRewardsDeposit(rewardType, msg.sender, recipient, msg.value);
+        emit ZoraRewardsDeposit(msg.sender, recipient, msg.value, comment);
     }
 
-    function deposit(bytes4 rewardType, address recipient1, uint256 amount1, address recipient2, uint256 amount2)
+    function depositBatch(address[] calldata recipients, uint256[] calldata rewards, string calldata comment)
         external
         payable
     {
-        if (msg.value != (amount1 + amount2)) {
-            revert INVALID_DEPOSIT_AMOUNT();
+        uint256 numRecipients = recipients.length;
+
+        if (numRecipients != rewards.length) {
+            revert RECIPIENTS_AND_AMOUNTS_LENGTH_MISMATCH();
         }
 
-        _mint(recipient1, amount1);
-        _mint(recipient2, amount2);
+        uint256 expectedTotalValue;
 
-        emit ZoraRewardsDeposit(rewardType, msg.sender, recipient1, amount1, recipient2, amount2);
+        for (uint256 i; i < numRecipients;) {
+            expectedTotalValue += rewards[i];
+
+            unchecked {
+                ++i;
+            }
+        }
+
+        if (msg.value != expectedTotalValue) {
+            revert INVALID_DEPOSIT();
+        }
+
+        for (uint256 i; i < numRecipients;) {
+            _mint(recipients[i], rewards[i]);
+
+            unchecked {
+                ++i;
+            }
+        }
+
+        emit ZoraRewardsBatchDeposit(msg.sender, recipients, rewards, comment);
     }
 
-    function deposit(
-        bytes4 rewardType,
-        address recipient1,
-        uint256 amount1,
-        address recipient2,
-        uint256 amount2,
-        address recipient3,
-        uint256 amount3
+    function depositFreeMintRewards(
+        address creator,
+        uint256 creatorReward,
+        address finder,
+        uint256 finderReward,
+        address lister,
+        uint256 listerReward,
+        address zora,
+        uint256 zoraReward
     ) external payable {
-        if (msg.value != (amount1 + amount2 + amount3)) {
-            revert INVALID_DEPOSIT_AMOUNT();
+        if (msg.value != (creatorReward + finderReward + listerReward + zoraReward)) {
+            revert INVALID_DEPOSIT();
         }
 
-        _mint(recipient1, amount1);
-        _mint(recipient2, amount2);
-        _mint(recipient3, amount3);
+        _mint(creator, creatorReward);
+        _mint(finder, finderReward);
+        _mint(lister, listerReward);
+        _mint(zora, zoraReward);
 
-        emit ZoraRewardsDeposit(rewardType, msg.sender, recipient1, amount1, recipient2, amount2, recipient3, amount3);
-    }
-
-    function deposit(
-        bytes4 rewardType,
-        address recipient1,
-        uint256 amount1,
-        address recipient2,
-        uint256 amount2,
-        address recipient3,
-        uint256 amount3,
-        address recipient4,
-        uint256 amount4
-    ) external payable {
-        if (msg.value != (amount1 + amount2 + amount3 + amount4)) {
-            revert INVALID_DEPOSIT_AMOUNT();
-        }
-
-        _mint(recipient1, amount1);
-        _mint(recipient2, amount2);
-        _mint(recipient3, amount3);
-        _mint(recipient4, amount4);
-
-        emit ZoraRewardsDeposit(
-            rewardType, msg.sender, recipient1, amount1, recipient2, amount2, recipient3, amount3, recipient4, amount4
+        emit ZoraFreeMintRewardsDeposit(
+            msg.sender, creator, creatorReward, finder, finderReward, lister, listerReward, zora, zoraReward
         );
     }
 
-    function deposit(
-        bytes4 rewardType,
-        address recipient1,
-        uint256 amount1,
-        address recipient2,
-        uint256 amount2,
-        address recipient3,
-        uint256 amount3,
-        address recipient4,
-        uint256 amount4,
-        address recipient5,
-        uint256 amount5
+    function depositPaidMintRewards(
+        address finder,
+        uint256 finderReward,
+        address lister,
+        uint256 listerReward,
+        address zora,
+        uint256 zoraReward
     ) external payable {
-        if (msg.value != (amount1 + amount2 + amount3 + amount4 + amount5)) {
-            revert INVALID_DEPOSIT_AMOUNT();
+        if (msg.value != (finderReward + listerReward + zoraReward)) {
+            revert INVALID_DEPOSIT();
         }
 
-        _mint(recipient1, amount1);
-        _mint(recipient2, amount2);
-        _mint(recipient3, amount3);
-        _mint(recipient4, amount4);
-        _mint(recipient5, amount5);
+        _mint(finder, finderReward);
+        _mint(lister, listerReward);
+        _mint(zora, zoraReward);
 
-        emit ZoraRewardsDeposit(
-            rewardType,
-            msg.sender,
-            recipient1,
-            amount1,
-            recipient2,
-            amount2,
-            recipient3,
-            amount3,
-            recipient4,
-            amount4,
-            recipient5,
-            amount5
-        );
+        emit ZoraPaidMintRewardsDeposit(msg.sender, finder, finderReward, lister, listerReward, zora, zoraReward);
     }
 
     function withdraw(address recipient, uint256 amount) external {
@@ -128,6 +105,6 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
             revert TRANSFER_FAILED();
         }
 
-        emit ZoraRewardsWithdrawal(msg.sender, recipient, amount);
+        emit ZoraRewardsWithdraw(msg.sender, recipient, amount);
     }
 }
