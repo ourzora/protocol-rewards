@@ -15,14 +15,10 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
         ERC20Permit(tokenName)
     { }
 
-    function deposit(bytes4 rewardType, address recipient, uint256 amount) external payable {
-        if (msg.value != amount) {
-            revert INVALID_DEPOSIT_AMOUNT();
-        }
+    function deposit(bytes4 rewardType, address recipient) external payable {
+        _mint(recipient, msg.value);
 
-        _mint(recipient, amount);
-
-        emit RewardsAdded(rewardType, recipient, amount);
+        emit RewardsAdded(rewardType, recipient, msg.value);
     }
 
     function deposit(bytes4 rewardType, address recipient1, uint256 amount1, address recipient2, uint256 amount2)

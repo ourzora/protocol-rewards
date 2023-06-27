@@ -45,7 +45,7 @@ interface IZoraRewards {
     error INVALID_TOKEN_QUANTITY();
     error TRANSFER_FAILED();
 
-    function deposit(bytes4 rewardType, address recipient, uint256 amount) external payable;
+    function deposit(bytes4 rewardType, address recipient) external payable;
     function deposit(bytes4 rewardType, address recipient1, uint256 amount1, address recipient2, uint256 amount2)
         external
         payable;
