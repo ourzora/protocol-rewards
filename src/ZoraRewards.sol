@@ -1,15 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import { ERC20, ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
 import { IZoraRewards } from "./interfaces/IZoraRewards.sol";
 
-contract ZoraRewards is IZoraRewards, ERC20 {
+contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
     bytes4 public constant ZORA_FREE_MINT_REWARD_TYPE = bytes4(keccak256("ZORA_FREE_MINT_REWARD"));
     bytes4 public constant ZORA_PAID_MINT_REWARD_TYPE = bytes4(keccak256("ZORA_PAID_MINT_REWARD"));
 
-    constructor(string memory tokenName, string memory tokenSymbol) payable ERC20(tokenName, tokenSymbol) { }
+    constructor(string memory tokenName, string memory tokenSymbol)
+        payable
+        ERC20(tokenName, tokenSymbol)
+        ERC20Permit(tokenName)
+    { }
 
     function deposit(bytes4 rewardType, address recipient, uint256 amount) external payable {
         if (msg.value != amount) {
