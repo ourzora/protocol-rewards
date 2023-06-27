@@ -18,7 +18,7 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
     function deposit(bytes4 rewardType, address recipient) external payable {
         _mint(recipient, msg.value);
 
-        emit RewardsAdded(rewardType, recipient, msg.value);
+        emit ZoraRewardsDeposit(rewardType, msg.sender, recipient, msg.value);
     }
 
     function deposit(bytes4 rewardType, address recipient1, uint256 amount1, address recipient2, uint256 amount2)
@@ -32,7 +32,7 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
         _mint(recipient1, amount1);
         _mint(recipient2, amount2);
 
-        emit RewardsAdded(rewardType, recipient1, amount1, recipient2, amount2);
+        emit ZoraRewardsDeposit(rewardType, msg.sender, recipient1, amount1, recipient2, amount2);
     }
 
     function deposit(
@@ -52,7 +52,7 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
         _mint(recipient2, amount2);
         _mint(recipient3, amount3);
 
-        emit RewardsAdded(rewardType, recipient1, amount1, recipient2, amount2, recipient3, amount3);
+        emit ZoraRewardsDeposit(rewardType, msg.sender, recipient1, amount1, recipient2, amount2, recipient3, amount3);
     }
 
     function deposit(
@@ -75,8 +75,8 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
         _mint(recipient3, amount3);
         _mint(recipient4, amount4);
 
-        emit RewardsAdded(
-            rewardType, recipient1, amount1, recipient2, amount2, recipient3, amount3, recipient4, amount4
+        emit ZoraRewardsDeposit(
+            rewardType, msg.sender, recipient1, amount1, recipient2, amount2, recipient3, amount3, recipient4, amount4
         );
     }
 
@@ -103,8 +103,9 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
         _mint(recipient4, amount4);
         _mint(recipient5, amount5);
 
-        emit RewardsAdded(
+        emit ZoraRewardsDeposit(
             rewardType,
+            msg.sender,
             recipient1,
             amount1,
             recipient2,
@@ -126,5 +127,7 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
         if (!success) {
             revert TRANSFER_FAILED();
         }
+
+        emit ZoraRewardsWithdrawal(msg.sender, recipient, amount);
     }
 }
