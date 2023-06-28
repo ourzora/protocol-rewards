@@ -30,6 +30,8 @@ interface IZoraRewards {
     error INVALID_WITHDRAW();
     error RECIPIENTS_AND_AMOUNTS_LENGTH_MISMATCH();
     error TRANSFER_FAILED();
+    error SIGNATURE_DEADLINE_EXPIRED();
+    error INVALID_SIGNER();
 
     function deposit(address recipient, string calldata comment) external payable;
     function depositBatch(address[] calldata recipients, uint256[] calldata rewards, string calldata comment)
