@@ -6,6 +6,9 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import { IZoraRewards } from "./interfaces/IZoraRewards.sol";
 
 contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
+    bytes4 public constant ZORA_FREE_MINT_REWARD_TYPE = bytes4(keccak256("ZORA_FREE_MINT_REWARD"));
+    bytes4 public constant ZORA_PAID_MINT_REWARD_TYPE = bytes4(keccak256("ZORA_PAID_MINT_REWARD"));
+
     bytes32 internal constant WITHDRAW_TYPEHASH =
         keccak256("Withdraw(address owner,address recipient,uint256 amount,uint256 nonce,uint256 deadline)");
 
@@ -18,7 +21,7 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
     function deposit(address recipient, string calldata comment) external payable {
         _mint(recipient, msg.value);
 
-        emit ZoraRewardsDeposit(msg.sender, recipient, msg.value, comment);
+        emit ZoraRewardsMint(msg.sender, recipient, msg.value, comment);
     }
 
     function depositBatch(address[] calldata recipients, uint256[] calldata rewards, string calldata comment)
@@ -51,9 +54,9 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
             unchecked {
                 ++i;
             }
-        }
 
-        emit ZoraRewardsBatchDeposit(msg.sender, recipients, rewards, comment);
+            emit ZoraRewardsMint(msg.sender, recipients[i], rewards[i], comment);
+        }
     }
 
     function depositFreeMintRewards(
@@ -61,42 +64,62 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
         uint256 creatorReward,
         address finder,
         uint256 finderReward,
-        address lister,
-        uint256 listerReward,
+        address origin,
+        uint256 originReward,
         address zora,
         uint256 zoraReward
     ) external payable {
-        if (msg.value != (creatorReward + finderReward + listerReward + zoraReward)) {
+        if (msg.value != (creatorReward + finderReward + originReward + zoraReward)) {
             revert INVALID_DEPOSIT();
         }
 
         _mint(creator, creatorReward);
         _mint(finder, finderReward);
-        _mint(lister, listerReward);
+        _mint(origin, originReward);
         _mint(zora, zoraReward);
 
-        emit ZoraFreeMintRewardsDeposit(
-            msg.sender, creator, creatorReward, finder, finderReward, lister, listerReward, zora, zoraReward
+        emit ZoraRewardsMint(
+            ZORA_FREE_MINT_REWARD_TYPE,
+            msg.sender,
+            creator,
+            creatorReward,
+            finder,
+            finderReward,
+            origin,
+            originReward,
+            zora,
+            zoraReward
         );
     }
 
     function depositPaidMintRewards(
         address finder,
         uint256 finderReward,
-        address lister,
-        uint256 listerReward,
+        address origin,
+        uint256 originReward,
         address zora,
         uint256 zoraReward
     ) external payable {
-        if (msg.value != (finderReward + listerReward + zoraReward)) {
+        if (msg.value != (finderReward + originReward + zoraReward)) {
             revert INVALID_DEPOSIT();
         }
 
         _mint(finder, finderReward);
-        _mint(lister, listerReward);
+        _mint(origin, originReward);
         _mint(zora, zoraReward);
 
-        emit ZoraPaidMintRewardsDeposit(msg.sender, finder, finderReward, lister, listerReward, zora, zoraReward);
+        emit ZoraRewardsMint(
+            ZORA_PAID_MINT_REWARD_TYPE,
+            msg.sender,
+            address(0),
+            0,
+            finder,
+            finderReward,
+            origin,
+            originReward,
+            zora,
+            zoraReward
+        );
     }
 
     function withdraw(address recipient, uint256 amount) external {
@@ -134,6 +157,6 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
             revert TRANSFER_FAILED();
         }
 
-        emit ZoraRewardsWithdraw(owner, recipient, amount);
+        emit ZoraRewardsBurn(owner, recipient, amount);
     }
 }

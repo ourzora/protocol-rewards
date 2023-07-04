@@ -2,29 +2,20 @@
 pragma solidity 0.8.17;
 
 interface IZoraRewards {
-    event ZoraRewardsDeposit(address indexed from, address recipient, uint256 amount, string comment);
-    event ZoraRewardsBatchDeposit(address indexed from, address[] recipients, uint256[] amounts, string comment);
-    event ZoraFreeMintRewardsDeposit(
-        address indexed from,
+    event ZoraRewardsMint(
+        bytes4 indexed rewardType,
+        address from,
         address indexed creator,
         uint256 creatorReward,
-        address finder,
+        address indexed finder,
         uint256 finderReward,
-        address lister,
-        uint256 listerReward,
+        address origin,
+        uint256 originReward,
         address zora,
         uint256 zoraReward
     );
-    event ZoraPaidMintRewardsDeposit(
-        address indexed from,
-        address finder,
-        uint256 finderReward,
-        address lister,
-        uint256 listerReward,
-        address zora,
-        uint256 zoraReward
-    );
-    event ZoraRewardsWithdraw(address indexed from, address recipient, uint256 amount);
+    event ZoraRewardsMint(address indexed from, address indexed recipient, uint256 indexed reward, string comment);
+    event ZoraRewardsBurn(address indexed from, address indexed recipient, uint256 amount);
 
     error INVALID_DEPOSIT();
     error INVALID_WITHDRAW();
@@ -42,16 +33,16 @@ interface IZoraRewards {
         uint256 creatorReward,
         address finder,
         uint256 finderReward,
-        address lister,
-        uint256 listerReward,
+        address origin,
+        uint256 originReward,
         address zora,
         uint256 zoraReward
     ) external payable;
     function depositPaidMintRewards(
         address finder,
         uint256 finderReward,
-        address lister,
-        uint256 listerReward,
+        address origin,
+        uint256 originReward,
         address zora,
         uint256 zoraReward
     ) external payable;

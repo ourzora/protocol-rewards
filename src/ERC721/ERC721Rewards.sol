@@ -15,12 +15,12 @@ abstract contract ERC721Rewards is MintRewards {
         uint256 salePrice,
         address creator,
         address finder,
-        address lister
+        address origin
     ) internal {
         if (salePrice == 0) {
-            _handleFreeMintRewards(msgValue, numTokens, creator, finder, lister);
+            _handleFreeMintRewards(msgValue, numTokens, creator, finder, origin);
         } else {
-            _handlePaidMintRewards(msgValue, numTokens, salePrice, finder, lister);
+            _handlePaidMintRewards(msgValue, numTokens, salePrice, finder, origin);
         }
     }
 
@@ -29,9 +29,9 @@ abstract contract ERC721Rewards is MintRewards {
         uint256 numTokens,
         address creator,
         address finder,
-        address lister
+        address origin
     ) private {
-        (uint256 totalReward, uint256 creatorReward, uint256 finderReward, uint256 listerReward, uint256 zoraReward) =
+        (uint256 totalReward, uint256 creatorReward, uint256 finderReward, uint256 originReward, uint256 zoraReward) =
             computeFreeMintRewards(numTokens);
 
         if (msgValue != totalReward) {
@@ -42,12 +42,12 @@ abstract contract ERC721Rewards is MintRewards {
             finder = ZORA_REWARD_RECIPIENT;
         }
 
-        if (lister == address(0)) {
-            lister = ZORA_REWARD_RECIPIENT;
+        if (origin == address(0)) {
+            origin = ZORA_REWARD_RECIPIENT;
         }
 
         ZORA_REWARDS.depositFreeMintRewards{ value: totalReward }(
-            creator, creatorReward, finder, finderReward, lister, listerReward, ZORA_REWARD_RECIPIENT, zoraReward
+            creator, creatorReward, finder, finderReward, origin, originReward, ZORA_REWARD_RECIPIENT, zoraReward
         );
     }
 
@@ -56,9 +56,9 @@ abstract contract ERC721Rewards is MintRewards {
         uint256 numTokens,
         uint256 salePrice,
         address finder,
-        address lister
+        address origin
     ) private {
-        (uint256 totalReward, uint256 finderReward, uint256 listerReward, uint256 zoraReward) =
+        (uint256 totalReward, uint256 finderReward, uint256 originReward, uint256 zoraReward) =
             computePaidMintRewards(numTokens);
 
         uint256 totalSales = salePrice * numTokens;
@@ -71,12 +71,12 @@ abstract contract ERC721Rewards is MintRewards {
             finder = ZORA_REWARD_RECIPIENT;
         }
 
-        if (lister == address(0)) {
-            lister = ZORA_REWARD_RECIPIENT;
+        if (origin == address(0)) {
+            origin = ZORA_REWARD_RECIPIENT;
         }
 
         ZORA_REWARDS.depositPaidMintRewards{ value: totalReward }(
-            finder, finderReward, lister, listerReward, ZORA_REWARD_RECIPIENT, zoraReward
+            finder, finderReward, origin, originReward, ZORA_REWARD_RECIPIENT, zoraReward
         );
     }
 }
