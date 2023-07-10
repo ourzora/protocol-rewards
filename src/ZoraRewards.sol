@@ -9,9 +9,9 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
     bytes4 public constant ZORA_FREE_MINT_REWARD_TYPE = bytes4(keccak256("ZORA_FREE_MINT_REWARD"));
     bytes4 public constant ZORA_PAID_MINT_REWARD_TYPE = bytes4(keccak256("ZORA_PAID_MINT_REWARD"));
 
-    bytes32 internal constant DEPOSIT_TYPEHASH =
+    bytes32 public constant DEPOSIT_TYPEHASH =
         keccak256("Deposit(address owner,address recipient,uint256 amount,uint256 nonce,uint256 deadline)");
-    bytes32 internal constant WITHDRAW_TYPEHASH =
+    bytes32 public constant WITHDRAW_TYPEHASH =
         keccak256("Withdraw(address owner,address recipient,uint256 amount,uint256 nonce,uint256 deadline)");
 
     constructor() payable ERC20("Zora Rewards", "ZORR") ERC20Permit("Zora Rewards") { }
