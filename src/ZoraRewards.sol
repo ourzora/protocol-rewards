@@ -137,7 +137,8 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
     ) external {
         if (block.timestamp > deadline) revert SIGNATURE_DEADLINE_EXPIRED();
 
-        bytes32 withdrawHash = keccak256(abi.encode(WITHDRAW_TYPEHASH, owner, recipient, amount, deadline));
+        bytes32 withdrawHash =
+            keccak256(abi.encode(WITHDRAW_TYPEHASH, owner, recipient, amount, _useNonce(owner), deadline));
 
         bytes32 hash = _hashTypedDataV4(withdrawHash);
 
