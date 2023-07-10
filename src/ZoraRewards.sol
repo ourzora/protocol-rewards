@@ -9,14 +9,12 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
     bytes4 public constant ZORA_FREE_MINT_REWARD_TYPE = bytes4(keccak256("ZORA_FREE_MINT_REWARD"));
     bytes4 public constant ZORA_PAID_MINT_REWARD_TYPE = bytes4(keccak256("ZORA_PAID_MINT_REWARD"));
 
+    bytes32 internal constant DEPOSIT_TYPEHASH =
+        keccak256("Deposit(address owner,address recipient,uint256 amount,uint256 nonce,uint256 deadline)");
     bytes32 internal constant WITHDRAW_TYPEHASH =
         keccak256("Withdraw(address owner,address recipient,uint256 amount,uint256 nonce,uint256 deadline)");
 
-    constructor(string memory tokenName, string memory tokenSymbol)
-        payable
-        ERC20(tokenName, tokenSymbol)
-        ERC20Permit(tokenName)
-    { }
+    constructor() payable ERC20("Zora Rewards", "ZORR") ERC20Permit("Zora Rewards") { }
 
     function deposit(address recipient, string calldata comment) external payable {
         _mint(recipient, msg.value);
@@ -24,39 +22,30 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
         emit ZoraRewardsMint(msg.sender, recipient, msg.value, comment);
     }
 
-    function depositBatch(address[] calldata recipients, uint256[] calldata rewards, string calldata comment)
-        external
-        payable
-    {
-        uint256 numRecipients = recipients.length;
+    function depositWithSig(
+        address owner,
+        address recipient,
+        uint256 amount,
+        uint256 nonce,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external payable {
+        if (block.timestamp > deadline) revert SIGNATURE_DEADLINE_EXPIRED();
 
-        if (numRecipients != rewards.length) {
-            revert RECIPIENTS_AND_AMOUNTS_LENGTH_MISMATCH();
-        }
+        bytes32 depositHash =
+            keccak256(abi.encode(DEPOSIT_TYPEHASH, owner, recipient, amount, _useNonce(nonce), deadline));
 
-        uint256 expectedTotalValue;
+        bytes32 hash = _hashTypedDataV4(depositHash);
 
-        for (uint256 i; i < numRecipients;) {
-            expectedTotalValue += rewards[i];
+        address signer = ECDSA.recover(hash, v, r, s);
 
-            unchecked {
-                ++i;
-            }
-        }
+        if (signer != owner) revert INVALID_SIGNER();
 
-        if (msg.value != expectedTotalValue) {
-            revert INVALID_DEPOSIT();
-        }
+        _mint(recipient, amount);
 
-        for (uint256 i; i < numRecipients;) {
-            _mint(recipients[i], rewards[i]);
-
-            unchecked {
-                ++i;
-            }
-
-            emit ZoraRewardsMint(msg.sender, recipients[i], rewards[i], comment);
-        }
+        emit ZoraRewardsMint(owner, recipient, amount, comment);
     }
 
     function depositFreeMintRewards(
