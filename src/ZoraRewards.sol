@@ -3,7 +3,7 @@ pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
-import { IZoraRewards } from "./interfaces/IZoraRewards.sol";
+import "./interfaces/IZoraRewards.sol";
 
 contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
     bytes4 public constant ZORA_FREE_MINT_REWARD_TYPE = bytes4(keccak256("ZORA_FREE_MINT_REWARD"));
@@ -62,20 +62,20 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
     function depositFreeMintRewards(
         address creator,
         uint256 creatorReward,
-        address finder,
-        uint256 finderReward,
-        address origin,
-        uint256 originReward,
+        address mintReferral,
+        uint256 mintReferralReward,
+        address createReferral,
+        uint256 createReferralReward,
         address zora,
         uint256 zoraReward
     ) external payable {
-        if (msg.value != (creatorReward + finderReward + originReward + zoraReward)) {
+        if (msg.value != (creatorReward + mintReferralReward + createReferralReward + zoraReward)) {
             revert INVALID_DEPOSIT();
         }
 
         _mint(creator, creatorReward);
-        _mint(finder, finderReward);
-        _mint(origin, originReward);
+        _mint(mintReferral, mintReferralReward);
+        _mint(createReferral, createReferralReward);
         _mint(zora, zoraReward);
 
         emit ZoraRewardsMint(
@@ -83,29 +83,29 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
             msg.sender,
             creator,
             creatorReward,
-            finder,
-            finderReward,
-            origin,
-            originReward,
+            mintReferral,
+            mintReferralReward,
+            createReferral,
+            createReferralReward,
             zora,
             zoraReward
         );
     }
 
     function depositPaidMintRewards(
-        address finder,
-        uint256 finderReward,
-        address origin,
-        uint256 originReward,
+        address mintReferral,
+        uint256 mintReferralReward,
+        address createReferral,
+        uint256 createReferralReward,
         address zora,
         uint256 zoraReward
     ) external payable {
-        if (msg.value != (finderReward + originReward + zoraReward)) {
+        if (msg.value != (mintReferralReward + createReferralReward + zoraReward)) {
             revert INVALID_DEPOSIT();
         }
 
-        _mint(finder, finderReward);
-        _mint(origin, originReward);
+        _mint(mintReferral, mintReferralReward);
+        _mint(createReferral, createReferralReward);
         _mint(zora, zoraReward);
 
         emit ZoraRewardsMint(
@@ -113,10 +113,10 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
             msg.sender,
             address(0),
             0,
-            finder,
-            finderReward,
-            origin,
-            originReward,
+            mintReferral,
+            mintReferralReward,
+            createReferral,
+            createReferralReward,
             zora,
             zoraReward
         );

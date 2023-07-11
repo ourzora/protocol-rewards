@@ -7,10 +7,10 @@ interface IZoraRewards {
         address from,
         address indexed creator,
         uint256 creatorReward,
-        address indexed finder,
-        uint256 finderReward,
-        address origin,
-        uint256 originReward,
+        address indexed mintReferral,
+        uint256 mintReferralReward,
+        address createReferral,
+        uint256 createReferralReward,
         address zora,
         uint256 zoraReward
     );
@@ -31,18 +31,18 @@ interface IZoraRewards {
     function depositFreeMintRewards(
         address creator,
         uint256 creatorReward,
-        address finder,
-        uint256 finderReward,
-        address origin,
-        uint256 originReward,
+        address mintReferral,
+        uint256 mintReferralReward,
+        address createReferral,
+        uint256 createReferralReward,
         address zora,
         uint256 zoraReward
     ) external payable;
     function depositPaidMintRewards(
-        address finder,
-        uint256 finderReward,
-        address origin,
-        uint256 originReward,
+        address mintReferral,
+        uint256 mintReferralReward,
+        address createReferral,
+        uint256 createReferralReward,
         address zora,
         uint256 zoraReward
     ) external payable;
