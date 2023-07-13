@@ -46,7 +46,7 @@ abstract contract ERC721Rewards is MintRewards {
             origin = ZORA_REWARD_RECIPIENT;
         }
 
-        ZORA_REWARDS.depositFreeMintRewards{ value: totalReward }(
+        ZORA_REWARDS.depositFreeCreatorRewards{ value: totalReward }(
             creator, creatorReward, finder, finderReward, origin, originReward, ZORA_REWARD_RECIPIENT, zoraReward
         );
     }
@@ -75,7 +75,7 @@ abstract contract ERC721Rewards is MintRewards {
             origin = ZORA_REWARD_RECIPIENT;
         }
 
-        ZORA_REWARDS.depositPaidMintRewards{ value: totalReward }(
+        ZORA_REWARDS.depositPaidCreatorRewards{ value: totalReward }(
             finder, finderReward, origin, originReward, ZORA_REWARD_RECIPIENT, zoraReward
         );
     }
