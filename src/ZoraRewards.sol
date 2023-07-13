@@ -1,65 +1,68 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
+import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 
 import "./interfaces/IZoraRewards.sol";
 
-contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
-    bytes4 public constant ZORA_FREE_MINT_REWARD_TYPE = bytes4(keccak256("ZORA_FREE_MINT_REWARD"));
-    bytes4 public constant ZORA_PAID_MINT_REWARD_TYPE = bytes4(keccak256("ZORA_PAID_MINT_REWARD"));
-
+contract ZoraRewards is IZoraRewards, EIP712 {
     bytes32 public constant WITHDRAW_TYPEHASH =
-        keccak256("Withdraw(address owner,address recipient,uint256 amount,uint256 nonce,uint256 deadline)");
+        keccak256("Withdraw(address owner,uint256 amount,uint256 nonce,uint256 deadline)");
 
-    constructor(string memory tokenName, string memory tokenSymbol)
-        payable
-        ERC20(tokenName, tokenSymbol)
-        ERC20Permit(tokenName)
-    { }
+    mapping(address => uint256) public balanceOf;
+    mapping(address => uint256) public nonces;
 
-    function deposit(address recipient, string calldata comment) external payable {
-        _mint(recipient, msg.value);
+    constructor() payable EIP712("ZoraRewards", "1") { }
 
-        emit ZoraRewardsMint(msg.sender, recipient, msg.value, comment);
+    function totalSupply() external view returns (uint256) {
+        return address(this).balance;
     }
 
-    function depositBatch(address[] calldata recipients, uint256[] calldata rewards, string calldata comment)
-        external
-        payable
-    {
+    function deposit() public payable {
+        balanceOf[msg.sender] += msg.value;
+
+        emit Deposit(msg.sender, msg.sender, msg.value);
+    }
+
+    function depositTo(address recipient) external payable {
+        if (recipient == address(0)) revert ADDRESS_ZERO();
+
+        balanceOf[recipient] += msg.value;
+
+        emit Deposit(msg.sender, recipient, msg.value);
+    }
+
+    function depositToBatch(address[] calldata recipients, uint256[] calldata amounts) external payable {
         uint256 numRecipients = recipients.length;
 
-        if (numRecipients != rewards.length) {
-            revert RECIPIENTS_AND_AMOUNTS_LENGTH_MISMATCH();
-        }
+        if (numRecipients != amounts.length) revert ARRAY_LENGTH_MISMATCH();
 
         uint256 expectedTotalValue;
 
         for (uint256 i; i < numRecipients;) {
-            expectedTotalValue += rewards[i];
+            expectedTotalValue += amounts[i];
 
             unchecked {
                 ++i;
             }
         }
 
-        if (msg.value != expectedTotalValue) {
-            revert INVALID_DEPOSIT();
-        }
+        if (msg.value != expectedTotalValue) revert INVALID_DEPOSIT();
 
         for (uint256 i; i < numRecipients;) {
-            _mint(recipients[i], rewards[i]);
+            if (recipients[i] == address(0)) revert ADDRESS_ZERO();
+
+            balanceOf[recipients[i]] += amounts[i];
+
+            emit Deposit(msg.sender, recipients[i], amounts[i]);
 
             unchecked {
                 ++i;
             }
-
-            emit ZoraRewardsMint(msg.sender, recipients[i], rewards[i], comment);
         }
     }
 
-    function depositFreeMintRewards(
+    function depositFreeCreatorRewards(
         address creator,
         uint256 creatorReward,
         address mintReferral,
@@ -73,13 +76,12 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
             revert INVALID_DEPOSIT();
         }
 
-        _mint(creator, creatorReward);
-        _mint(mintReferral, mintReferralReward);
-        _mint(createReferral, createReferralReward);
-        _mint(zora, zoraReward);
+        if (creator != address(0)) balanceOf[creator] += creatorReward;
+        if (mintReferral != address(0)) balanceOf[mintReferral] += mintReferralReward;
+        if (createReferral != address(0)) balanceOf[createReferral] += createReferralReward;
+        if (zora != address(0)) balanceOf[zora] += zoraReward;
 
-        emit ZoraRewardsMint(
-            ZORA_FREE_MINT_REWARD_TYPE,
+        emit DepositCreatorRewards(
             msg.sender,
             creator,
             creatorReward,
@@ -92,7 +94,7 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
         );
     }
 
-    function depositPaidMintRewards(
+    function depositPaidCreatorRewards(
         address mintReferral,
         uint256 mintReferralReward,
         address createReferral,
@@ -100,16 +102,13 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
         address zora,
         uint256 zoraReward
     ) external payable {
-        if (msg.value != (mintReferralReward + createReferralReward + zoraReward)) {
-            revert INVALID_DEPOSIT();
-        }
+        if (msg.value != (mintReferralReward + createReferralReward + zoraReward)) revert INVALID_DEPOSIT();
 
-        _mint(mintReferral, mintReferralReward);
-        _mint(createReferral, createReferralReward);
-        _mint(zora, zoraReward);
+        if (mintReferral != address(0)) balanceOf[mintReferral] += mintReferralReward;
+        if (createReferral != address(0)) balanceOf[createReferral] += createReferralReward;
+        if (zora != address(0)) balanceOf[zora] += zoraReward;
 
-        emit ZoraRewardsMint(
-            ZORA_PAID_MINT_REWARD_TYPE,
+        emit DepositCreatorRewards(
             msg.sender,
             address(0),
             0,
@@ -122,42 +121,43 @@ contract ZoraRewards is IZoraRewards, ERC20, ERC20Permit {
         );
     }
 
-    function withdraw(address recipient, uint256 amount) external {
-        _withdraw(msg.sender, recipient, amount);
+    function withdraw(uint256 amount) external {
+        if (amount > balanceOf[msg.sender]) revert INVALID_WITHDRAW();
+
+        balanceOf[msg.sender] -= amount;
+
+        // TODO update gas limit
+        (bool success,) = msg.sender.call{ value: amount, gas: 50_000 }("");
+
+        if (!success) revert TRANSFER_FAILED();
+
+        emit Withdraw(msg.sender, amount);
     }
 
-    function withdrawWithSig(
-        address owner,
-        address recipient,
-        uint256 amount,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external {
+    function withdrawWithSig(address owner, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external {
         if (block.timestamp > deadline) revert SIGNATURE_DEADLINE_EXPIRED();
 
-        bytes32 withdrawHash =
-            keccak256(abi.encode(WITHDRAW_TYPEHASH, owner, recipient, amount, _useNonce(owner), deadline));
+        bytes32 withdrawHash = keccak256(abi.encode(WITHDRAW_TYPEHASH, owner, amount, nonces[owner]++, deadline));
 
-        bytes32 hash = _hashTypedDataV4(withdrawHash);
+        bytes32 digest = _hashTypedDataV4(withdrawHash);
 
-        address signer = ECDSA.recover(hash, v, r, s);
+        address recoveredAddress = ecrecover(digest, v, r, s);
 
-        if (signer != owner) revert INVALID_SIGNER();
+        if (recoveredAddress == address(0) || recoveredAddress != owner) revert INVALID_SIGNATURE();
 
-        _withdraw(owner, recipient, amount);
+        if (amount > balanceOf[owner]) revert INVALID_WITHDRAW();
+
+        balanceOf[owner] -= amount;
+
+        // TODO update gas limit
+        (bool success,) = owner.call{ value: amount, gas: 50_000 }("");
+
+        if (!success) revert TRANSFER_FAILED();
+
+        emit Withdraw(owner, amount);
     }
 
-    function _withdraw(address owner, address recipient, uint256 amount) internal {
-        _burn(owner, amount);
-
-        (bool success,) = recipient.call{ value: amount }("");
-
-        if (!success) {
-            revert TRANSFER_FAILED();
-        }
-
-        emit ZoraRewardsBurn(owner, recipient, amount);
+    receive() external payable {
+        deposit();
     }
 }
