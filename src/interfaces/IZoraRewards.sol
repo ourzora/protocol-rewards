@@ -16,6 +16,26 @@ interface IZoraRewards {
     );
     event Withdraw(address indexed owner, uint256 indexed amount);
 
+    function depositFreeCreatorRewards(
+        address creator,
+        uint256 creatorReward,
+        address mintReferral,
+        uint256 mintReferralReward,
+        address createReferral,
+        uint256 createReferralReward,
+        address zora,
+        uint256 zoraReward
+    ) external payable;
+
+    function depositPaidCreatorRewards(
+        address mintReferral,
+        uint256 mintReferralReward,
+        address createReferral,
+        uint256 createReferralReward,
+        address zora,
+        uint256 zoraReward
+    ) external payable;
+
     error ADDRESS_ZERO();
     error ARRAY_LENGTH_MISMATCH();
     error INVALID_DEPOSIT();
