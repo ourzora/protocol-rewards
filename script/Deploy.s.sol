@@ -15,7 +15,7 @@ contract DeployScript is Script {
     function run() public {
         vm.startBroadcast(deployerPK);
 
-        ZoraRewards zoraRewards = new ZoraRewards("Zora Rewards", "ZORAREWARDS");
+        ZoraRewards zoraRewards = new ZoraRewards();
 
         console2.log("ZORA REWARDS DEPLOYED:");
         console2.logAddress(address(zoraRewards));
