@@ -13,19 +13,19 @@ abstract contract ERC1155Rewards is MintRewards {
         uint256 msgValue,
         uint256 numTokens,
         address creator,
-        address finder,
-        address origin
+        address mintReferral,
+        address createReferral
     ) internal returns (uint256) {
         uint256 totalReward = computeTotalReward(numTokens);
 
         if (msgValue < totalReward) {
             revert INSUFFICIENT_ETH_FOR_REWARDS();
         } else if (msgValue == totalReward) {
-            _handleFreeMintRewards(numTokens, creator, finder, origin);
+            _handleFreeMintRewards(numTokens, creator, mintReferral, createReferral);
 
             return 0;
         } else {
-            _handlePaidMintRewards(numTokens, finder, origin);
+            _handlePaidMintRewards(numTokens, creator, mintReferral, createReferral);
 
             unchecked {
                 return msgValue - totalReward;
@@ -33,37 +33,70 @@ abstract contract ERC1155Rewards is MintRewards {
         }
     }
 
-    function _handleFreeMintRewards(uint256 numTokens, address creator, address finder, address origin) private {
-        (uint256 totalReward, uint256 creatorReward, uint256 finderReward, uint256 originReward, uint256 zoraReward) =
-            computeFreeMintRewards(numTokens);
+    function _handleFreeMintRewards(uint256 numTokens, address creator, address mintReferral, address createReferral)
+        private
+    {
+        (
+            uint256 totalReward,
+            uint256 creatorReward,
+            uint256 mintReferralReward,
+            uint256 createReferralReward,
+            uint256 firstMinterReward,
+            uint256 zoraReward
+        ) = computeFreeMintRewards(numTokens);
 
-        if (finder == address(0)) {
-            finder = ZORA_REWARD_RECIPIENT;
+        if (mintReferral == address(0)) {
+            mintReferral = ZORA_REWARD_RECIPIENT;
         }
 
-        if (origin == address(0)) {
-            origin = ZORA_REWARD_RECIPIENT;
+        if (createReferral == address(0)) {
+            createReferral = ZORA_REWARD_RECIPIENT;
         }
 
-        ZORA_REWARDS.depositFreeCreatorRewards{ value: totalReward }(
-            creator, creatorReward, finder, finderReward, origin, originReward, ZORA_REWARD_RECIPIENT, zoraReward
+        ZORA_REWARDS.depositRewards{ value: totalReward }(
+            creator,
+            creatorReward,
+            mintReferral,
+            mintReferralReward,
+            createReferral,
+            createReferralReward,
+            creator, //
+            firstMinterReward,
+            ZORA_REWARD_RECIPIENT,
+            zoraReward
         );
     }
 
-    function _handlePaidMintRewards(uint256 numTokens, address finder, address origin) private {
-        (uint256 totalReward, uint256 finderReward, uint256 originReward, uint256 zoraReward) =
-            computePaidMintRewards(numTokens);
+    function _handlePaidMintRewards(uint256 numTokens, address creator, address mintReferral, address createReferral)
+        private
+    {
+        (
+            uint256 totalReward,
+            uint256 mintReferralReward,
+            uint256 createReferralReward,
+            uint256 firstMinterReward,
+            uint256 zoraReward
+        ) = computePaidMintRewards(numTokens);
 
-        if (finder == address(0)) {
-            finder = ZORA_REWARD_RECIPIENT;
+        if (mintReferral == address(0)) {
+            mintReferral = ZORA_REWARD_RECIPIENT;
         }
 
-        if (origin == address(0)) {
-            origin = ZORA_REWARD_RECIPIENT;
+        if (createReferral == address(0)) {
+            createReferral = ZORA_REWARD_RECIPIENT;
         }
 
-        ZORA_REWARDS.depositPaidCreatorRewards{ value: totalReward }(
-            finder, finderReward, origin, originReward, ZORA_REWARD_RECIPIENT, zoraReward
+        ZORA_REWARDS.depositRewards{ value: totalReward }(
+            address(0),
+            0,
+            mintReferral,
+            mintReferralReward,
+            createReferral,
+            createReferralReward,
+            creator, //
+            firstMinterReward,
+            ZORA_REWARD_RECIPIENT,
+            zoraReward
         );
     }
 }

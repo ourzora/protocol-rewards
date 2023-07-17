@@ -4,22 +4,22 @@ pragma solidity 0.8.17;
 import { IZoraRewards } from "../interfaces/IZoraRewards.sol";
 
 abstract contract MintRewards {
+    error INVALID_ADDRESS_ZERO();
+    error INSUFFICIENT_ETH_FOR_REWARDS();
+
     uint256 internal constant TOTAL_REWARD_PER_MINT = 0.000999 ether;
 
-    uint256 internal constant CREATOR_REWARD_FREE_MINT = 0.000555 ether;
-    uint256 internal constant FINDER_REWARD_FREE_MINT = 0.000111 ether;
-    uint256 internal constant ORIGIN_REWARD_FREE_MINT = 0.000111 ether;
-    uint256 internal constant ZORA_REWARD_FREE_MINT = 0.000222 ether;
+    uint256 internal constant MINT_REFERRAL_FREE_MINT_REWARD = 0.000111 ether;
+    uint256 internal constant CREATE_REFERRAL_FREE_MINT_REWARD = 0.000111 ether;
+    uint256 internal constant MINT_REFERRAL_PAID_MINT_REWARD = 0.000333 ether;
+    uint256 internal constant CREATE_REFERRAL_PAID_MINT_REWARD = 0.000333 ether;
 
-    uint256 internal constant FINDER_REWARD_PAID_MINT = 0.000333 ether;
-    uint256 internal constant ORIGIN_REWARD_PAID_MINT = 0.000333 ether;
-    uint256 internal constant ZORA_REWARD_PAID_MINT = 0.000333 ether;
+    uint256 internal constant CREATOR_REWARD = 0.000444 ether;
+    uint256 internal constant FIRST_MINTER_REWARD = 0.000111 ether;
+    uint256 internal constant ZORA_REWARD = 0.000222 ether;
 
     address internal immutable ZORA_REWARD_RECIPIENT;
     IZoraRewards internal immutable ZORA_REWARDS;
-
-    error INVALID_ADDRESS_ZERO();
-    error INSUFFICIENT_ETH_FOR_REWARDS();
 
     constructor(address _zoraRewards, address _zoraRewardRecipient) payable {
         if (_zoraRewards == address(0) || _zoraRewardRecipient == address(0)) {
@@ -40,26 +40,35 @@ abstract contract MintRewards {
         returns (
             uint256 totalReward,
             uint256 creatorReward,
-            uint256 finderReward,
-            uint256 originReward,
+            uint256 mintReferralReward,
+            uint256 createReferralReward,
+            uint256 firstMinterReward,
             uint256 zoraReward
         )
     {
         totalReward = computeTotalReward(numTokens);
-        creatorReward = numTokens * CREATOR_REWARD_FREE_MINT;
-        finderReward = numTokens * FINDER_REWARD_FREE_MINT;
-        originReward = numTokens * ORIGIN_REWARD_FREE_MINT;
-        zoraReward = numTokens * ZORA_REWARD_FREE_MINT;
+        creatorReward = numTokens * CREATOR_REWARD;
+        mintReferralReward = numTokens * MINT_REFERRAL_FREE_MINT_REWARD;
+        createReferralReward = numTokens * CREATE_REFERRAL_FREE_MINT_REWARD;
+        firstMinterReward = numTokens * FIRST_MINTER_REWARD;
+        zoraReward = numTokens * ZORA_REWARD;
     }
 
     function computePaidMintRewards(uint256 numTokens)
         public
         pure
-        returns (uint256 totalReward, uint256 finderReward, uint256 originReward, uint256 zoraReward)
+        returns (
+            uint256 totalReward,
+            uint256 mintReferralReward,
+            uint256 createReferralReward,
+            uint256 firstMinterReward,
+            uint256 zoraReward
+        )
     {
         totalReward = computeTotalReward(numTokens);
-        finderReward = numTokens * FINDER_REWARD_PAID_MINT;
-        originReward = numTokens * ORIGIN_REWARD_PAID_MINT;
-        zoraReward = numTokens * ZORA_REWARD_PAID_MINT;
+        mintReferralReward = numTokens * MINT_REFERRAL_PAID_MINT_REWARD;
+        createReferralReward = numTokens * CREATE_REFERRAL_PAID_MINT_REWARD;
+        firstMinterReward = numTokens * FIRST_MINTER_REWARD;
+        zoraReward = numTokens * ZORA_REWARD;
     }
 }
