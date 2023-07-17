@@ -19,7 +19,9 @@ contract ZoraRewards is IZoraRewards, EIP712 {
     }
 
     function deposit() public payable {
-        balanceOf[msg.sender] += msg.value;
+        unchecked {
+            balanceOf[msg.sender] += msg.value;
+        }
 
         emit Deposit(msg.sender, msg.sender, msg.value);
     }
@@ -27,7 +29,9 @@ contract ZoraRewards is IZoraRewards, EIP712 {
     function depositTo(address recipient) external payable {
         if (recipient == address(0)) revert ADDRESS_ZERO();
 
-        balanceOf[recipient] += msg.value;
+        unchecked {
+            balanceOf[recipient] += msg.value;
+        }
 
         emit Deposit(msg.sender, recipient, msg.value);
     }
@@ -49,12 +53,20 @@ contract ZoraRewards is IZoraRewards, EIP712 {
 
         if (msg.value != expectedTotalValue) revert INVALID_DEPOSIT();
 
+        address currentRecipient;
+        uint256 currentAmount;
+
         for (uint256 i; i < numRecipients;) {
-            if (recipients[i] == address(0)) revert ADDRESS_ZERO();
+            currentRecipient = recipients[i];
+            currentAmount = amounts[i];
 
-            balanceOf[recipients[i]] += amounts[i];
+            if (currentRecipient == address(0)) revert ADDRESS_ZERO();
 
-            emit Deposit(msg.sender, recipients[i], amounts[i]);
+            unchecked {
+                balanceOf[currentRecipient] += currentAmount;
+            }
+
+            emit Deposit(msg.sender, currentRecipient, currentAmount);
 
             unchecked {
                 ++i;
@@ -62,26 +74,31 @@ contract ZoraRewards is IZoraRewards, EIP712 {
         }
     }
 
-    function depositFreeCreatorRewards(
+    function depositRewards(
         address creator,
         uint256 creatorReward,
         address mintReferral,
         uint256 mintReferralReward,
         address createReferral,
         uint256 createReferralReward,
+        address firstMinter,
+        uint256 firstMinterReward,
         address zora,
         uint256 zoraReward
     ) external payable {
-        if (msg.value != (creatorReward + mintReferralReward + createReferralReward + zoraReward)) {
+        if (msg.value != (creatorReward + mintReferralReward + createReferralReward + firstMinterReward + zoraReward)) {
             revert INVALID_DEPOSIT();
         }
 
-        if (creator != address(0)) balanceOf[creator] += creatorReward;
-        if (mintReferral != address(0)) balanceOf[mintReferral] += mintReferralReward;
-        if (createReferral != address(0)) balanceOf[createReferral] += createReferralReward;
-        if (zora != address(0)) balanceOf[zora] += zoraReward;
+        unchecked {
+            if (creator != address(0)) balanceOf[creator] += creatorReward;
+            if (mintReferral != address(0)) balanceOf[mintReferral] += mintReferralReward;
+            if (createReferral != address(0)) balanceOf[createReferral] += createReferralReward;
+            if (firstMinter != address(0)) balanceOf[firstMinter] += firstMinterReward;
+            if (zora != address(0)) balanceOf[zora] += zoraReward;
+        }
 
-        emit DepositCreatorRewards(
+        emit RewardsDeposit(
             msg.sender,
             creator,
             creatorReward,
@@ -89,49 +106,28 @@ contract ZoraRewards is IZoraRewards, EIP712 {
             mintReferralReward,
             createReferral,
             createReferralReward,
-            zora,
-            zoraReward
-        );
-    }
-
-    function depositPaidCreatorRewards(
-        address mintReferral,
-        uint256 mintReferralReward,
-        address createReferral,
-        uint256 createReferralReward,
-        address zora,
-        uint256 zoraReward
-    ) external payable {
-        if (msg.value != (mintReferralReward + createReferralReward + zoraReward)) revert INVALID_DEPOSIT();
-
-        if (mintReferral != address(0)) balanceOf[mintReferral] += mintReferralReward;
-        if (createReferral != address(0)) balanceOf[createReferral] += createReferralReward;
-        if (zora != address(0)) balanceOf[zora] += zoraReward;
-
-        emit DepositCreatorRewards(
-            msg.sender,
-            address(0),
-            0,
-            mintReferral,
-            mintReferralReward,
-            createReferral,
-            createReferralReward,
+            firstMinter,
+            firstMinterReward,
             zora,
             zoraReward
         );
     }
 
     function withdraw(uint256 amount) external {
-        if (amount > balanceOf[msg.sender]) revert INVALID_WITHDRAW();
+        address owner = msg.sender;
 
-        balanceOf[msg.sender] -= amount;
+        if (amount > balanceOf[owner]) revert INVALID_WITHDRAW();
+
+        unchecked {
+            balanceOf[owner] -= amount;
+        }
 
         // TODO update gas limit
-        (bool success,) = msg.sender.call{ value: amount, gas: 50_000 }("");
+        (bool success,) = owner.call{ value: amount, gas: 50_000 }("");
 
         if (!success) revert TRANSFER_FAILED();
 
-        emit Withdraw(msg.sender, amount);
+        emit Withdraw(owner, amount);
     }
 
     function withdrawWithSig(address owner, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external {
@@ -147,7 +143,9 @@ contract ZoraRewards is IZoraRewards, EIP712 {
 
         if (amount > balanceOf[owner]) revert INVALID_WITHDRAW();
 
-        balanceOf[owner] -= amount;
+        unchecked {
+            balanceOf[owner] -= amount;
+        }
 
         // TODO update gas limit
         (bool success,) = owner.call{ value: amount, gas: 50_000 }("");
