@@ -6,8 +6,7 @@ export default defineConfig({
     {
       name: 'ZoraRewards',
       address: {
-        5: '0x421B6ad0CdD20bE3636F3511B6ae244d8F668dB1',
-        999: '0x421B6ad0CdD20bE3636F3511B6ae244d8F668dB1',
+        999: '0x76CC78EF3aafD52e716a8e37F3dBbE0C42c51d54',
       },
       abi: [
         {
