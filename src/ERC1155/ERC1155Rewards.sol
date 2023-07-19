@@ -16,6 +16,8 @@ abstract contract ERC1155Rewards is MintRewards {
         address mintReferral,
         address createReferral
     ) internal returns (uint256) {
+        if (creator == address(0)) revert CREATOR_FUNDS_RECIPIENT_NOT_SET();
+
         uint256 totalReward = computeTotalReward(numTokens);
 
         if (msgValue < totalReward) {

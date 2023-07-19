@@ -17,6 +17,8 @@ abstract contract ERC721Rewards is MintRewards {
         address mintReferral,
         address createReferral
     ) internal {
+        if (creator == address(0)) revert CREATOR_FUNDS_RECIPIENT_NOT_SET();
+
         if (salePrice == 0) {
             _handleFreeMintRewards(msgValue, numTokens, creator, mintReferral, createReferral);
         } else {

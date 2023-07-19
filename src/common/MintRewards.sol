@@ -5,6 +5,7 @@ import { IZoraRewards } from "../interfaces/IZoraRewards.sol";
 
 abstract contract MintRewards {
     error INVALID_ADDRESS_ZERO();
+    error CREATOR_FUNDS_RECIPIENT_NOT_SET();
     error INSUFFICIENT_ETH_FOR_REWARDS();
 
     uint256 internal constant TOTAL_REWARD_PER_MINT = 0.000999 ether;
