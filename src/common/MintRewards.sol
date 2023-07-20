@@ -72,4 +72,71 @@ abstract contract MintRewards {
         firstMinterReward = numTokens * FIRST_MINTER_REWARD;
         zoraReward = numTokens * ZORA_REWARD;
     }
+
+    function _depositFreeMintRewards(uint256 numTokens, address creator, address mintReferral, address createReferral)
+        internal
+    {
+        (
+            uint256 totalReward,
+            uint256 creatorReward,
+            uint256 mintReferralReward,
+            uint256 createReferralReward,
+            uint256 firstMinterReward,
+            uint256 zoraReward
+        ) = computeFreeMintRewards(numTokens);
+
+        if (mintReferral == address(0)) {
+            mintReferral = ZORA_REWARD_RECIPIENT;
+        }
+
+        if (createReferral == address(0)) {
+            createReferral = ZORA_REWARD_RECIPIENT;
+        }
+
+        ZORA_REWARDS.depositRewards{ value: totalReward }(
+            creator,
+            creatorReward,
+            mintReferral,
+            mintReferralReward,
+            createReferral,
+            createReferralReward,
+            creator, //
+            firstMinterReward,
+            ZORA_REWARD_RECIPIENT,
+            zoraReward
+        );
+    }
+
+    function _depositPaidMintRewards(uint256 numTokens, address creator, address mintReferral, address createReferral)
+        internal
+    {
+        (
+            uint256 totalReward,
+            uint256 mintReferralReward,
+            uint256 createReferralReward,
+            uint256 firstMinterReward,
+            uint256 zoraReward
+        ) = computePaidMintRewards(numTokens);
+
+        if (mintReferral == address(0)) {
+            mintReferral = ZORA_REWARD_RECIPIENT;
+        }
+
+        if (createReferral == address(0)) {
+            createReferral = ZORA_REWARD_RECIPIENT;
+        }
+
+        ZORA_REWARDS.depositRewards{ value: totalReward }(
+            address(0),
+            0,
+            mintReferral,
+            mintReferralReward,
+            createReferral,
+            createReferralReward,
+            creator, //
+            firstMinterReward,
+            ZORA_REWARD_RECIPIENT,
+            zoraReward
+        );
+    }
 }
