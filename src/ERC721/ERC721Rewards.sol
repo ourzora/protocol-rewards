@@ -22,19 +22,15 @@ abstract contract ERC721Rewards is MintRewards {
         uint256 totalReward = computeTotalReward(numTokens);
 
         if (salePrice == 0) {
-            if (msgValue != totalReward) {
-                revert INSUFFICIENT_ETH_FOR_REWARDS();
-            }
+            if (msgValue != totalReward) revert INVALID_ETH_AMOUNT();
 
-            _depositFreeMintRewards(numTokens, creator, mintReferral, createReferral);
+            _depositFreeMintRewards(totalReward, numTokens, creator, mintReferral, createReferral);
         } else {
-            uint256 totalSale = salePrice * numTokens;
+            uint256 totalSale = numTokens * salePrice;
 
-            if (msgValue != (totalSale + totalReward)) {
-                revert INSUFFICIENT_ETH_FOR_REWARDS();
-            }
+            if (msgValue != (totalReward + totalSale)) revert INVALID_ETH_AMOUNT();
 
-            _depositPaidMintRewards(numTokens, creator, mintReferral, createReferral);
+            _depositPaidMintRewards(totalReward, numTokens, creator, mintReferral, createReferral);
         }
     }
 }

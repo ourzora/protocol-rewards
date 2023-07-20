@@ -4,9 +4,9 @@ pragma solidity 0.8.17;
 import { IZoraRewards } from "../interfaces/IZoraRewards.sol";
 
 abstract contract MintRewards {
-    error INVALID_ADDRESS_ZERO();
     error CREATOR_FUNDS_RECIPIENT_NOT_SET();
-    error INSUFFICIENT_ETH_FOR_REWARDS();
+    error INVALID_ADDRESS_ZERO();
+    error INVALID_ETH_AMOUNT();
 
     uint256 internal constant TOTAL_REWARD_PER_MINT = 0.000999 ether;
 
@@ -39,7 +39,6 @@ abstract contract MintRewards {
         public
         pure
         returns (
-            uint256 totalReward,
             uint256 creatorReward,
             uint256 mintReferralReward,
             uint256 createReferralReward,
@@ -47,7 +46,6 @@ abstract contract MintRewards {
             uint256 zoraReward
         )
     {
-        totalReward = computeTotalReward(numTokens);
         creatorReward = numTokens * CREATOR_REWARD;
         mintReferralReward = numTokens * MINT_REFERRAL_FREE_MINT_REWARD;
         createReferralReward = numTokens * CREATE_REFERRAL_FREE_MINT_REWARD;
@@ -59,25 +57,26 @@ abstract contract MintRewards {
         public
         pure
         returns (
-            uint256 totalReward,
             uint256 mintReferralReward,
             uint256 createReferralReward,
             uint256 firstMinterReward,
             uint256 zoraReward
         )
     {
-        totalReward = computeTotalReward(numTokens);
         mintReferralReward = numTokens * MINT_REFERRAL_PAID_MINT_REWARD;
         createReferralReward = numTokens * CREATE_REFERRAL_PAID_MINT_REWARD;
         firstMinterReward = numTokens * FIRST_MINTER_REWARD;
         zoraReward = numTokens * ZORA_REWARD;
     }
 
-    function _depositFreeMintRewards(uint256 numTokens, address creator, address mintReferral, address createReferral)
-        internal
-    {
+    function _depositFreeMintRewards(
+        uint256 totalReward,
+        uint256 numTokens,
+        address creator,
+        address mintReferral,
+        address createReferral
+    ) internal {
         (
-            uint256 totalReward,
             uint256 creatorReward,
             uint256 mintReferralReward,
             uint256 createReferralReward,
@@ -107,16 +106,15 @@ abstract contract MintRewards {
         );
     }
 
-    function _depositPaidMintRewards(uint256 numTokens, address creator, address mintReferral, address createReferral)
-        internal
-    {
-        (
-            uint256 totalReward,
-            uint256 mintReferralReward,
-            uint256 createReferralReward,
-            uint256 firstMinterReward,
-            uint256 zoraReward
-        ) = computePaidMintRewards(numTokens);
+    function _depositPaidMintRewards(
+        uint256 totalReward,
+        uint256 numTokens,
+        address creator,
+        address mintReferral,
+        address createReferral
+    ) internal {
+        (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) =
+            computePaidMintRewards(numTokens);
 
         if (mintReferral == address(0)) {
             mintReferral = ZORA_REWARD_RECIPIENT;

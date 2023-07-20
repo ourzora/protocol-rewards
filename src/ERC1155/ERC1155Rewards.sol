@@ -21,13 +21,13 @@ abstract contract ERC1155Rewards is MintRewards {
         uint256 totalReward = computeTotalReward(numTokens);
 
         if (msgValue < totalReward) {
-            revert INSUFFICIENT_ETH_FOR_REWARDS();
+            revert INVALID_ETH_AMOUNT();
         } else if (msgValue == totalReward) {
-            _depositFreeMintRewards(numTokens, creator, mintReferral, createReferral);
+            _depositFreeMintRewards(totalReward, numTokens, creator, mintReferral, createReferral);
 
             return 0;
         } else {
-            _depositPaidMintRewards(numTokens, creator, mintReferral, createReferral);
+            _depositPaidMintRewards(totalReward, numTokens, creator, mintReferral, createReferral);
 
             unchecked {
                 return msgValue - totalReward;
