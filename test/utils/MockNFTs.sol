@@ -20,8 +20,14 @@ contract MockERC721 is ERC721, ERC721Rewards {
         salePrice = _salePrice;
     }
 
-    function mint(address to, uint256 numTokens, address creator, address finder, address lister) external payable {
-        _handleRewards(msg.value, numTokens, salePrice, creator, finder, lister);
+    function mintWithRewards(
+        address to,
+        uint256 numTokens,
+        address creator,
+        address mintReferral,
+        address createReferral
+    ) external payable {
+        _handleRewards(msg.value, numTokens, salePrice, creator, mintReferral, createReferral);
 
         for (uint256 i; i < numTokens; ++i) {
             _mint(to, currentTokenId++);
@@ -41,11 +47,16 @@ contract MockERC1155 is ERC1155, ERC1155Rewards {
         salePrice = _salePrice;
     }
 
-    function mint(address to, uint256 tokenId, uint256 numTokens, address creator, address finder, address lister)
-        external
-        payable
-    {
-        uint256 remainingValue = _handleRewardsAndGetValueSent(msg.value, numTokens, creator, finder, lister);
+    function mintWithRewards(
+        address to,
+        uint256 tokenId,
+        uint256 numTokens,
+        address creator,
+        address mintReferral,
+        address createReferral
+    ) external payable {
+        uint256 remainingValue =
+            _handleRewardsAndGetValueSent(msg.value, numTokens, creator, mintReferral, createReferral);
 
         require(remainingValue == salePrice, "MockERC1155: incorrect value");
 
