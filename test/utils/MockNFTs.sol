@@ -36,6 +36,8 @@ contract MockERC721 is ERC721, ERC721Rewards {
 }
 
 contract MockERC1155 is ERC1155, ERC1155Rewards {
+    error MOCK_ERC1155_INVALID_REMAINING_VALUE();
+
     uint256 public salePrice;
 
     constructor(address _creator, address _zoraRewards, address _zoraRewardRecipient)
@@ -58,7 +60,9 @@ contract MockERC1155 is ERC1155, ERC1155Rewards {
         uint256 remainingValue =
             _handleRewardsAndGetValueSent(msg.value, numTokens, creator, mintReferral, createReferral);
 
-        require(remainingValue == salePrice, "MockERC1155: incorrect value");
+        uint256 expectedRemainingValue = salePrice * numTokens;
+
+        if (remainingValue != expectedRemainingValue) revert MOCK_ERC1155_INVALID_REMAINING_VALUE();
 
         _mint(to, tokenId, numTokens, "");
     }
