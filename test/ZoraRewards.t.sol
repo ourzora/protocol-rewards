@@ -30,8 +30,8 @@ contract ZoraRewardsTest is Test {
         createReferral = makeAddr("createReferral");
         zora = makeAddr("zora");
 
-        mockERC721 = new MockERC721(creator, address(zoraRewards), zora);
-        mockERC1155 = new MockERC1155(creator, address(zoraRewards), zora);
+        mockERC721 = new MockERC721(creator, createReferral, address(zoraRewards), zora);
+        mockERC1155 = new MockERC1155(creator, createReferral, address(zoraRewards), zora);
 
         vm.label(address(zoraRewards), "ZORA_REWARDS");
         vm.label(address(mockERC721), "MOCK_ERC721");
@@ -75,7 +75,7 @@ contract ZoraRewardsTest is Test {
         vm.deal(alice, totalReward);
 
         vm.prank(alice);
-        mockERC721.mintWithRewards{ value: totalReward }(alice, numTokens, creator, mintReferral, createReferral);
+        mockERC721.mintWithRewards{ value: totalReward }(alice, numTokens, mintReferral);
 
         (
             uint256 creatorReward,
@@ -105,7 +105,7 @@ contract ZoraRewardsTest is Test {
         vm.deal(alice, totalValue);
 
         vm.prank(alice);
-        mockERC721.mintWithRewards{ value: totalValue }(alice, numTokens, creator, mintReferral, createReferral);
+        mockERC721.mintWithRewards{ value: totalValue }(alice, numTokens, mintReferral);
 
         (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) =
             mockERC721.computePaidMintRewards(numTokens);
@@ -120,12 +120,14 @@ contract ZoraRewardsTest is Test {
     function test721FreeMintNullReferralRecipients(uint16 numTokens) public {
         vm.assume(numTokens > 0 && numTokens < 10_000);
 
+        mockERC721 = new MockERC721(creator, address(0), address(zoraRewards), zora);
+
         uint256 totalReward = mockERC721.computeTotalReward(numTokens);
 
         vm.deal(alice, totalReward);
 
         vm.prank(alice);
-        mockERC721.mintWithRewards{ value: totalReward }(alice, numTokens, creator, address(0), address(0));
+        mockERC721.mintWithRewards{ value: totalReward }(alice, numTokens, address(0));
 
         (
             uint256 creatorReward,
@@ -144,6 +146,8 @@ contract ZoraRewardsTest is Test {
         vm.assume(numTokens > 0 && numTokens < 10_000);
         vm.assume(pricePerToken > 0 && pricePerToken < 100 ether);
 
+        mockERC721 = new MockERC721(creator, address(0), address(zoraRewards), zora);
+
         mockERC721.setSalePrice(pricePerToken);
 
         uint256 totalReward = mockERC721.computeTotalReward(numTokens);
@@ -153,7 +157,7 @@ contract ZoraRewardsTest is Test {
         vm.deal(alice, totalValue);
 
         vm.prank(alice);
-        mockERC721.mintWithRewards{ value: totalValue }(alice, numTokens, creator, address(0), address(0));
+        mockERC721.mintWithRewards{ value: totalValue }(alice, numTokens, address(0));
 
         (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) =
             mockERC721.computePaidMintRewards(numTokens);
@@ -166,17 +170,19 @@ contract ZoraRewardsTest is Test {
     function testRevert721CreatorFundsRecipientNotSet(uint16 numTokens) public {
         vm.assume(numTokens > 0);
 
+        mockERC721 = new MockERC721(address(0), createReferral, address(zoraRewards), zora);
+
         uint256 totalValue = mockERC721.computeTotalReward(numTokens);
 
         vm.expectRevert(abi.encodeWithSignature("CREATOR_FUNDS_RECIPIENT_NOT_SET()"));
-        mockERC721.mintWithRewards{ value: totalValue }(alice, numTokens, address(0), mintReferral, createReferral);
+        mockERC721.mintWithRewards{ value: totalValue }(alice, numTokens, mintReferral);
     }
 
     function testRevert721FreeMintInvalidEth(uint16 numTokens) public {
         vm.assume(numTokens > 0);
 
         vm.expectRevert(abi.encodeWithSignature("INVALID_ETH_AMOUNT()"));
-        mockERC721.mintWithRewards(alice, numTokens, creator, mintReferral, createReferral);
+        mockERC721.mintWithRewards(alice, numTokens, mintReferral);
     }
 
     function testRevert721PaidMintInvalidEth(uint16 numTokens, uint256 pricePerToken) public {
@@ -186,7 +192,7 @@ contract ZoraRewardsTest is Test {
         mockERC721.setSalePrice(pricePerToken);
 
         vm.expectRevert(abi.encodeWithSignature("INVALID_ETH_AMOUNT()"));
-        mockERC721.mintWithRewards(alice, numTokens, creator, mintReferral, createReferral);
+        mockERC721.mintWithRewards(alice, numTokens, mintReferral);
     }
 
     /// ERC1155 ///
@@ -199,7 +205,7 @@ contract ZoraRewardsTest is Test {
         vm.deal(alice, totalReward);
 
         vm.prank(alice);
-        mockERC1155.mintWithRewards{ value: totalReward }(alice, 0, numTokens, creator, mintReferral, createReferral);
+        mockERC1155.mintWithRewards{ value: totalReward }(alice, 0, numTokens, mintReferral);
 
         (
             uint256 creatorReward,
@@ -229,7 +235,7 @@ contract ZoraRewardsTest is Test {
         vm.deal(alice, totalValue);
 
         vm.prank(alice);
-        mockERC1155.mintWithRewards{ value: totalValue }(alice, 0, numTokens, creator, mintReferral, createReferral);
+        mockERC1155.mintWithRewards{ value: totalValue }(alice, 0, numTokens, mintReferral);
 
         (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) =
             mockERC1155.computePaidMintRewards(numTokens);
@@ -244,12 +250,14 @@ contract ZoraRewardsTest is Test {
     function test1155FreeMintNullReferralRecipients(uint16 numTokens) public {
         vm.assume(numTokens > 0);
 
+        mockERC1155 = new MockERC1155(creator, address(0), address(zoraRewards), zora);
+
         uint256 totalReward = mockERC1155.computeTotalReward(numTokens);
 
         vm.deal(alice, totalReward);
 
         vm.prank(alice);
-        mockERC1155.mintWithRewards{ value: totalReward }(alice, 0, numTokens, creator, address(0), address(0));
+        mockERC1155.mintWithRewards{ value: totalReward }(alice, 0, numTokens, address(0));
 
         (
             uint256 creatorReward,
@@ -268,6 +276,8 @@ contract ZoraRewardsTest is Test {
         vm.assume(numTokens > 0);
         vm.assume(pricePerToken > 0 && pricePerToken < 100 ether);
 
+        mockERC1155 = new MockERC1155(creator, address(0), address(zoraRewards), zora);
+
         mockERC1155.setSalePrice(pricePerToken);
 
         uint256 totalReward = mockERC1155.computeTotalReward(numTokens);
@@ -277,7 +287,7 @@ contract ZoraRewardsTest is Test {
         vm.deal(alice, totalValue);
 
         vm.prank(alice);
-        mockERC1155.mintWithRewards{ value: totalValue }(alice, 0, numTokens, creator, address(0), address(0));
+        mockERC1155.mintWithRewards{ value: totalValue }(alice, 0, numTokens, address(0));
 
         (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) =
             mockERC1155.computePaidMintRewards(numTokens);
@@ -291,7 +301,7 @@ contract ZoraRewardsTest is Test {
         vm.assume(numTokens > 0);
 
         vm.expectRevert(abi.encodeWithSignature("INVALID_ETH_AMOUNT()"));
-        mockERC1155.mintWithRewards(alice, 0, numTokens, creator, mintReferral, createReferral);
+        mockERC1155.mintWithRewards(alice, 0, numTokens, mintReferral);
     }
 
     function testRevert1155PaidMintInvalidEth(uint16 numTokens, uint256 pricePerToken) public {
@@ -301,7 +311,7 @@ contract ZoraRewardsTest is Test {
         mockERC1155.setSalePrice(pricePerToken);
 
         vm.expectRevert(abi.encodeWithSignature("INVALID_ETH_AMOUNT()"));
-        mockERC1155.mintWithRewards(alice, 0, numTokens, creator, mintReferral, createReferral);
+        mockERC1155.mintWithRewards(alice, 0, numTokens, mintReferral);
     }
 
     function testRevert1155PaidMintInvalidEthRemaining(uint16 numTokens, uint256 pricePerToken) public {
@@ -318,6 +328,6 @@ contract ZoraRewardsTest is Test {
 
         vm.prank(alice);
         vm.expectRevert(abi.encodeWithSignature("MOCK_ERC1155_INVALID_REMAINING_VALUE()"));
-        mockERC1155.mintWithRewards{ value: totalValue - 1 }(alice, 0, numTokens, creator, mintReferral, createReferral);
+        mockERC1155.mintWithRewards{ value: totalValue - 1 }(alice, 0, numTokens, mintReferral);
     }
 }
