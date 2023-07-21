@@ -10,20 +10,19 @@ export default defineConfig({
       },
       abi: [
         {
-          inputs: [
-            {
-              internalType: 'string',
-              name: 'tokenName',
-              type: 'string',
-            },
-            {
-              internalType: 'string',
-              name: 'tokenSymbol',
-              type: 'string',
-            },
-          ],
+          inputs: [],
           stateMutability: 'payable',
           type: 'constructor',
+        },
+        {
+          inputs: [],
+          name: 'ADDRESS_ZERO',
+          type: 'error',
+        },
+        {
+          inputs: [],
+          name: 'ARRAY_LENGTH_MISMATCH',
+          type: 'error',
         },
         {
           inputs: [],
@@ -32,7 +31,7 @@ export default defineConfig({
         },
         {
           inputs: [],
-          name: 'INVALID_SIGNER',
+          name: 'INVALID_SIGNATURE',
           type: 'error',
         },
         {
@@ -43,11 +42,6 @@ export default defineConfig({
         {
           inputs: [],
           name: 'InvalidShortString',
-          type: 'error',
-        },
-        {
-          inputs: [],
-          name: 'RECIPIENTS_AND_AMOUNTS_LENGTH_MISMATCH',
           type: 'error',
         },
         {
@@ -77,23 +71,23 @@ export default defineConfig({
             {
               indexed: true,
               internalType: 'address',
-              name: 'owner',
+              name: 'from',
               type: 'address',
             },
             {
               indexed: true,
               internalType: 'address',
-              name: 'spender',
+              name: 'recipient',
               type: 'address',
             },
             {
-              indexed: false,
+              indexed: true,
               internalType: 'uint256',
-              name: 'value',
+              name: 'amount',
               type: 'uint256',
             },
           ],
-          name: 'Approval',
+          name: 'Deposit',
           type: 'event',
         },
         {
@@ -105,62 +99,6 @@ export default defineConfig({
         {
           anonymous: false,
           inputs: [
-            {
-              indexed: true,
-              internalType: 'address',
-              name: 'from',
-              type: 'address',
-            },
-            {
-              indexed: true,
-              internalType: 'address',
-              name: 'to',
-              type: 'address',
-            },
-            {
-              indexed: false,
-              internalType: 'uint256',
-              name: 'value',
-              type: 'uint256',
-            },
-          ],
-          name: 'Transfer',
-          type: 'event',
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: 'address',
-              name: 'from',
-              type: 'address',
-            },
-            {
-              indexed: true,
-              internalType: 'address',
-              name: 'recipient',
-              type: 'address',
-            },
-            {
-              indexed: false,
-              internalType: 'uint256',
-              name: 'amount',
-              type: 'uint256',
-            },
-          ],
-          name: 'ZoraRewardsBurn',
-          type: 'event',
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: 'bytes4',
-              name: 'rewardType',
-              type: 'bytes4',
-            },
             {
               indexed: false,
               internalType: 'address',
@@ -182,25 +120,37 @@ export default defineConfig({
             {
               indexed: true,
               internalType: 'address',
-              name: 'finder',
+              name: 'mintReferral',
               type: 'address',
             },
             {
               indexed: false,
               internalType: 'uint256',
-              name: 'finderReward',
+              name: 'mintReferralReward',
               type: 'uint256',
             },
             {
               indexed: false,
               internalType: 'address',
-              name: 'origin',
+              name: 'createReferral',
               type: 'address',
             },
             {
               indexed: false,
               internalType: 'uint256',
-              name: 'originReward',
+              name: 'createReferralReward',
+              type: 'uint256',
+            },
+            {
+              indexed: true,
+              internalType: 'address',
+              name: 'firstMinter',
+              type: 'address',
+            },
+            {
+              indexed: false,
+              internalType: 'uint256',
+              name: 'firstMinterReward',
               type: 'uint256',
             },
             {
@@ -216,7 +166,7 @@ export default defineConfig({
               type: 'uint256',
             },
           ],
-          name: 'ZoraRewardsMint',
+          name: 'RewardsDeposit',
           type: 'event',
         },
         {
@@ -225,34 +175,22 @@ export default defineConfig({
             {
               indexed: true,
               internalType: 'address',
-              name: 'from',
-              type: 'address',
-            },
-            {
-              indexed: true,
-              internalType: 'address',
-              name: 'recipient',
+              name: 'owner',
               type: 'address',
             },
             {
               indexed: true,
               internalType: 'uint256',
-              name: 'reward',
+              name: 'amount',
               type: 'uint256',
             },
-            {
-              indexed: false,
-              internalType: 'string',
-              name: 'comment',
-              type: 'string',
-            },
           ],
-          name: 'ZoraRewardsMint',
+          name: 'Withdraw',
           type: 'event',
         },
         {
           inputs: [],
-          name: 'DOMAIN_SEPARATOR',
+          name: 'WITHDRAW_TYPEHASH',
           outputs: [
             {
               internalType: 'bytes32',
@@ -264,84 +202,10 @@ export default defineConfig({
           type: 'function',
         },
         {
-          inputs: [],
-          name: 'ZORA_FREE_MINT_REWARD_TYPE',
-          outputs: [
-            {
-              internalType: 'bytes4',
-              name: '',
-              type: 'bytes4',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [],
-          name: 'ZORA_PAID_MINT_REWARD_TYPE',
-          outputs: [
-            {
-              internalType: 'bytes4',
-              name: '',
-              type: 'bytes4',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
           inputs: [
             {
               internalType: 'address',
-              name: 'owner',
-              type: 'address',
-            },
-            {
-              internalType: 'address',
-              name: 'spender',
-              type: 'address',
-            },
-          ],
-          name: 'allowance',
-          outputs: [
-            {
-              internalType: 'uint256',
               name: '',
-              type: 'uint256',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'spender',
-              type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: 'amount',
-              type: 'uint256',
-            },
-          ],
-          name: 'approve',
-          outputs: [
-            {
-              internalType: 'bool',
-              name: '',
-              type: 'bool',
-            },
-          ],
-          stateMutability: 'nonpayable',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'account',
               type: 'address',
             },
           ],
@@ -358,78 +222,7 @@ export default defineConfig({
         },
         {
           inputs: [],
-          name: 'decimals',
-          outputs: [
-            {
-              internalType: 'uint8',
-              name: '',
-              type: 'uint8',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'spender',
-              type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: 'subtractedValue',
-              type: 'uint256',
-            },
-          ],
-          name: 'decreaseAllowance',
-          outputs: [
-            {
-              internalType: 'bool',
-              name: '',
-              type: 'bool',
-            },
-          ],
-          stateMutability: 'nonpayable',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'recipient',
-              type: 'address',
-            },
-            {
-              internalType: 'string',
-              name: 'comment',
-              type: 'string',
-            },
-          ],
           name: 'deposit',
-          outputs: [],
-          stateMutability: 'payable',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address[]',
-              name: 'recipients',
-              type: 'address[]',
-            },
-            {
-              internalType: 'uint256[]',
-              name: 'rewards',
-              type: 'uint256[]',
-            },
-            {
-              internalType: 'string',
-              name: 'comment',
-              type: 'string',
-            },
-          ],
-          name: 'depositBatch',
           outputs: [],
           stateMutability: 'payable',
           type: 'function',
@@ -448,22 +241,32 @@ export default defineConfig({
             },
             {
               internalType: 'address',
-              name: 'finder',
+              name: 'mintReferral',
               type: 'address',
             },
             {
               internalType: 'uint256',
-              name: 'finderReward',
+              name: 'mintReferralReward',
               type: 'uint256',
             },
             {
               internalType: 'address',
-              name: 'origin',
+              name: 'createReferral',
               type: 'address',
             },
             {
               internalType: 'uint256',
-              name: 'originReward',
+              name: 'createReferralReward',
+              type: 'uint256',
+            },
+            {
+              internalType: 'address',
+              name: 'firstMinter',
+              type: 'address',
+            },
+            {
+              internalType: 'uint256',
+              name: 'firstMinterReward',
               type: 'uint256',
             },
             {
@@ -477,7 +280,7 @@ export default defineConfig({
               type: 'uint256',
             },
           ],
-          name: 'depositFreeMintRewards',
+          name: 'depositRewards',
           outputs: [],
           stateMutability: 'payable',
           type: 'function',
@@ -486,36 +289,29 @@ export default defineConfig({
           inputs: [
             {
               internalType: 'address',
-              name: 'finder',
+              name: 'recipient',
               type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: 'finderReward',
-              type: 'uint256',
-            },
-            {
-              internalType: 'address',
-              name: 'origin',
-              type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: 'originReward',
-              type: 'uint256',
-            },
-            {
-              internalType: 'address',
-              name: 'zora',
-              type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: 'zoraReward',
-              type: 'uint256',
             },
           ],
-          name: 'depositPaidMintRewards',
+          name: 'depositTo',
+          outputs: [],
+          stateMutability: 'payable',
+          type: 'function',
+        },
+        {
+          inputs: [
+            {
+              internalType: 'address[]',
+              name: 'recipients',
+              type: 'address[]',
+            },
+            {
+              internalType: 'uint256[]',
+              name: 'amounts',
+              type: 'uint256[]',
+            },
+          ],
+          name: 'depositToBatch',
           outputs: [],
           stateMutability: 'payable',
           type: 'function',
@@ -567,44 +363,7 @@ export default defineConfig({
           inputs: [
             {
               internalType: 'address',
-              name: 'spender',
-              type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: 'addedValue',
-              type: 'uint256',
-            },
-          ],
-          name: 'increaseAllowance',
-          outputs: [
-            {
-              internalType: 'bool',
               name: '',
-              type: 'bool',
-            },
-          ],
-          stateMutability: 'nonpayable',
-          type: 'function',
-        },
-        {
-          inputs: [],
-          name: 'name',
-          outputs: [
-            {
-              internalType: 'string',
-              name: '',
-              type: 'string',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'owner',
               type: 'address',
             },
           ],
@@ -614,62 +373,6 @@ export default defineConfig({
               internalType: 'uint256',
               name: '',
               type: 'uint256',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'owner',
-              type: 'address',
-            },
-            {
-              internalType: 'address',
-              name: 'spender',
-              type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: 'value',
-              type: 'uint256',
-            },
-            {
-              internalType: 'uint256',
-              name: 'deadline',
-              type: 'uint256',
-            },
-            {
-              internalType: 'uint8',
-              name: 'v',
-              type: 'uint8',
-            },
-            {
-              internalType: 'bytes32',
-              name: 'r',
-              type: 'bytes32',
-            },
-            {
-              internalType: 'bytes32',
-              name: 's',
-              type: 'bytes32',
-            },
-          ],
-          name: 'permit',
-          outputs: [],
-          stateMutability: 'nonpayable',
-          type: 'function',
-        },
-        {
-          inputs: [],
-          name: 'symbol',
-          outputs: [
-            {
-              internalType: 'string',
-              name: '',
-              type: 'string',
             },
           ],
           stateMutability: 'view',
@@ -691,64 +394,6 @@ export default defineConfig({
         {
           inputs: [
             {
-              internalType: 'address',
-              name: 'to',
-              type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: 'amount',
-              type: 'uint256',
-            },
-          ],
-          name: 'transfer',
-          outputs: [
-            {
-              internalType: 'bool',
-              name: '',
-              type: 'bool',
-            },
-          ],
-          stateMutability: 'nonpayable',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'from',
-              type: 'address',
-            },
-            {
-              internalType: 'address',
-              name: 'to',
-              type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: 'amount',
-              type: 'uint256',
-            },
-          ],
-          name: 'transferFrom',
-          outputs: [
-            {
-              internalType: 'bool',
-              name: '',
-              type: 'bool',
-            },
-          ],
-          stateMutability: 'nonpayable',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'recipient',
-              type: 'address',
-            },
-            {
               internalType: 'uint256',
               name: 'amount',
               type: 'uint256',
@@ -764,11 +409,6 @@ export default defineConfig({
             {
               internalType: 'address',
               name: 'owner',
-              type: 'address',
-            },
-            {
-              internalType: 'address',
-              name: 'recipient',
               type: 'address',
             },
             {
@@ -801,6 +441,10 @@ export default defineConfig({
           outputs: [],
           stateMutability: 'nonpayable',
           type: 'function',
+        },
+        {
+          stateMutability: 'payable',
+          type: 'receive',
         },
       ],
     },
