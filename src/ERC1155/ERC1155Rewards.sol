@@ -9,14 +9,24 @@ abstract contract ERC1155Rewards is MintRewards {
         MintRewards(_zoraRewards, _zoraRewardRecipient)
     { }
 
+    mapping(uint256 => address) public createReferrals;
+
+    function updateCreateReferral(uint256 tokenId, address recipient) external {
+        if (msg.sender != createReferrals[tokenId]) revert ONLY_CREATE_REFERRAL();
+
+        createReferrals[tokenId] = recipient;
+    }
+
     function _handleRewardsAndGetValueSent(
         uint256 msgValue,
+        uint256 tokenId,
         uint256 numTokens,
         address creator,
-        address mintReferral,
-        address createReferral
+        address mintReferral
     ) internal returns (uint256) {
         if (creator == address(0)) revert CREATOR_FUNDS_RECIPIENT_NOT_SET();
+
+        address createReferral = createReferrals[tokenId];
 
         uint256 totalReward = computeTotalReward(numTokens);
 

@@ -9,13 +9,20 @@ abstract contract ERC721Rewards is MintRewards {
         MintRewards(_zoraRewards, _zoraRewardRecipient)
     { }
 
+    address public createReferral;
+
+    function updateCreateReferral(address recipient) external {
+        if (msg.sender != createReferral) revert ONLY_CREATE_REFERRAL();
+
+        createReferral = recipient;
+    }
+
     function _handleRewards(
         uint256 msgValue,
         uint256 numTokens,
         uint256 salePrice,
         address creator,
-        address mintReferral,
-        address createReferral
+        address mintReferral
     ) internal {
         if (creator == address(0)) revert CREATOR_FUNDS_RECIPIENT_NOT_SET();
 

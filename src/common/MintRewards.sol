@@ -7,6 +7,7 @@ abstract contract MintRewards {
     error CREATOR_FUNDS_RECIPIENT_NOT_SET();
     error INVALID_ADDRESS_ZERO();
     error INVALID_ETH_AMOUNT();
+    error ONLY_CREATE_REFERRAL();
 
     uint256 internal constant TOTAL_REWARD_PER_MINT = 0.000999 ether;
 
