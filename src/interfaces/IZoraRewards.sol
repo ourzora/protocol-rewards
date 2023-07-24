@@ -18,6 +18,14 @@ interface IZoraRewards {
     );
     event Withdraw(address indexed owner, uint256 indexed amount);
 
+    error ADDRESS_ZERO();
+    error ARRAY_LENGTH_MISMATCH();
+    error INVALID_DEPOSIT();
+    error INVALID_SIGNATURE();
+    error INVALID_WITHDRAW();
+    error SIGNATURE_DEADLINE_EXPIRED();
+    error TRANSFER_FAILED();
+
     function depositRewards(
         address creator,
         uint256 creatorReward,
@@ -30,12 +38,9 @@ interface IZoraRewards {
         address zora,
         uint256 zoraReward
     ) external payable;
-
-    error ADDRESS_ZERO();
-    error ARRAY_LENGTH_MISMATCH();
-    error INVALID_DEPOSIT();
-    error INVALID_SIGNATURE();
-    error INVALID_WITHDRAW();
-    error SIGNATURE_DEADLINE_EXPIRED();
-    error TRANSFER_FAILED();
+    function deposit() external payable;
+    function depositTo(address recipient) external payable;
+    function depositToBatch(address[] calldata recipients, uint256[] calldata amounts) external payable;
+    function withdraw(uint256 amount) external;
+    function withdrawWithSig(address owner, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external;
 }
