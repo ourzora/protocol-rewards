@@ -1,6 +1,6 @@
 {
   "name": "@zoralabs/zora-rewards",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "repository": "https://github.com/ourzora/zora-rewards.git",
   "license": "MIT",
   "files": [
@@ -9,10 +9,9 @@
   "scripts": {
     "prepack": "mkdir -p dist && cp -r src/ dist/contracts && cp -r addresses/ dist/addresses && cp -r out/ dist/artifacts/"
   },
-  "dependencies": {
-    "@openzeppelin/contracts": "^4.9.2"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@openzeppelin/contracts": "^4.9.2",
     "@types/node": "^20.3.2",
     "@wagmi/cli": "^1.3.0"
   }
