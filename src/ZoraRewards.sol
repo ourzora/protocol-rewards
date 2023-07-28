@@ -5,6 +5,7 @@ import "./lib/EIP712.sol";
 import "./interfaces/IZoraRewards.sol";
 
 contract ZoraRewards is IZoraRewards, EIP712 {
+    uint256 internal constant WITHDRAW_GAS_LIMIT = 200_000;
     bytes32 public constant WITHDRAW_TYPEHASH =
         keccak256("Withdraw(address owner,uint256 amount,uint256 nonce,uint256 deadline)");
 
@@ -116,8 +117,7 @@ contract ZoraRewards is IZoraRewards, EIP712 {
             balanceOf[owner] -= amount;
         }
 
-        // TODO update gas limit
-        (bool success,) = owner.call{ value: amount, gas: 50_000 }("");
+        (bool success,) = owner.call{ value: amount, gas: WITHDRAW_GAS_LIMIT }("");
 
         if (!success) revert TRANSFER_FAILED();
 
@@ -142,7 +142,7 @@ contract ZoraRewards is IZoraRewards, EIP712 {
         }
 
         // TODO update gas limit
-        (bool success,) = owner.call{ value: amount, gas: 50_000 }("");
+        (bool success,) = owner.call{ value: amount, gas: WITHDRAW_GAS_LIMIT }("");
 
         if (!success) revert TRANSFER_FAILED();
 
