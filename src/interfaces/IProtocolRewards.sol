@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-interface IZoraRewards {
+interface IProtocolRewards {
     event Deposit(address indexed from, address indexed recipient, uint256 amount, string comment);
     event RewardsDeposit(
         address from,

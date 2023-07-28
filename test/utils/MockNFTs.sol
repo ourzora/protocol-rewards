@@ -12,9 +12,9 @@ contract MockERC721 is ERC721, ERC721Rewards, ERC721RewardsStorage {
     uint256 public salePrice;
     uint256 public currentTokenId;
 
-    constructor(address _creator, address _createReferral, address _zoraRewards, address _zoraRewardRecipient)
+    constructor(address _creator, address _createReferral, address _protocolRewards, address _zoraRewardRecipient)
         ERC721("Mock ERC721", "MOCK")
-        ERC721Rewards(_zoraRewards, _zoraRewardRecipient)
+        ERC721Rewards(_protocolRewards, _zoraRewardRecipient)
     {
         creator = _creator;
         createReferral = _createReferral;
@@ -39,9 +39,9 @@ contract MockERC1155 is ERC1155, ERC1155Rewards, ERC1155RewardsStorage {
     address public creator;
     uint256 public salePrice;
 
-    constructor(address _creator, address _createReferral, address _zoraRewards, address _zoraRewardRecipient)
+    constructor(address _creator, address _createReferral, address _protocolRewards, address _zoraRewardRecipient)
         ERC1155("Mock ERC1155 URI")
-        ERC1155Rewards(_zoraRewards, _zoraRewardRecipient)
+        ERC1155Rewards(_protocolRewards, _zoraRewardRecipient)
     {
         creator = _creator;
         createReferrals[0] = _createReferral;

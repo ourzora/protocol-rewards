@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import { ProtocolRewards } from "../ProtocolRewards.sol";
+import { RewardSplits } from "../RewardSplits.sol";
 
 contract ERC1155RewardsStorage {
     mapping(uint256 => address) public createReferrals;
 }
 
-abstract contract ERC1155Rewards is ProtocolRewards {
-    constructor(address _zoraRewards, address _zoraRewardRecipient)
+abstract contract ERC1155Rewards is RewardSplits {
+    constructor(address _protocolRewards, address _zoraRewardRecipient)
         payable
-        ProtocolRewards(_zoraRewards, _zoraRewardRecipient)
+        RewardSplits(_protocolRewards, _zoraRewardRecipient)
     { }
 
     function _handleRewardsAndGetValueSent(

@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 import "forge-std/Script.sol";
 
-import { ZoraRewards } from "../src/ZoraRewards.sol";
+import { ProtocolRewards } from "../src/ProtocolRewards.sol";
 
 contract DeployScript is Script {
     uint256 internal deployerPK;
@@ -15,10 +15,10 @@ contract DeployScript is Script {
     function run() public {
         vm.startBroadcast(deployerPK);
 
-        ZoraRewards zoraRewards = new ZoraRewards();
+        ProtocolRewards protocolRewards = new ProtocolRewards();
 
-        console2.log("ZORA REWARDS DEPLOYED:");
-        console2.logAddress(address(zoraRewards));
+        console2.log("PROTOCOL REWARDS DEPLOYED:");
+        console2.logAddress(address(protocolRewards));
 
         vm.stopBroadcast();
     }

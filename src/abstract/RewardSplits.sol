@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import { IZoraRewards } from "../interfaces/IZoraRewards.sol";
+import { IProtocolRewards } from "../interfaces/IProtocolRewards.sol";
 
-abstract contract ProtocolRewards {
+abstract contract RewardSplits {
     error CREATOR_FUNDS_RECIPIENT_NOT_SET();
     error INVALID_ADDRESS_ZERO();
     error INVALID_ETH_AMOUNT();
@@ -21,14 +21,14 @@ abstract contract ProtocolRewards {
     uint256 internal constant ZORA_REWARD = 0.000222 ether;
 
     address internal immutable ZORA_REWARD_RECIPIENT;
-    IZoraRewards internal immutable ZORA_REWARDS;
+    IProtocolRewards internal immutable PROTOCOL_REWARDS;
 
-    constructor(address _zoraRewards, address _zoraRewardRecipient) payable {
-        if (_zoraRewards == address(0) || _zoraRewardRecipient == address(0)) {
+    constructor(address _protocolRewards, address _zoraRewardRecipient) payable {
+        if (_protocolRewards == address(0) || _zoraRewardRecipient == address(0)) {
             revert INVALID_ADDRESS_ZERO();
         }
 
-        ZORA_REWARDS = IZoraRewards(_zoraRewards);
+        PROTOCOL_REWARDS = IProtocolRewards(_protocolRewards);
         ZORA_REWARD_RECIPIENT = _zoraRewardRecipient;
     }
 
@@ -93,7 +93,7 @@ abstract contract ProtocolRewards {
             createReferral = ZORA_REWARD_RECIPIENT;
         }
 
-        ZORA_REWARDS.depositRewards{ value: totalReward }(
+        PROTOCOL_REWARDS.depositRewards{ value: totalReward }(
             creator,
             creatorReward,
             mintReferral,
@@ -125,7 +125,7 @@ abstract contract ProtocolRewards {
             createReferral = ZORA_REWARD_RECIPIENT;
         }
 
-        ZORA_REWARDS.depositRewards{ value: totalReward }(
+        PROTOCOL_REWARDS.depositRewards{ value: totalReward }(
             address(0),
             0,
             mintReferral,

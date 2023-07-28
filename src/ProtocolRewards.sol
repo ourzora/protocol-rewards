@@ -2,9 +2,9 @@
 pragma solidity 0.8.17;
 
 import "./lib/EIP712.sol";
-import "./interfaces/IZoraRewards.sol";
+import "./interfaces/IProtocolRewards.sol";
 
-contract ZoraRewards is IZoraRewards, EIP712 {
+contract ProtocolRewards is IProtocolRewards, EIP712 {
     uint256 internal constant WITHDRAW_GAS_LIMIT = 200_000;
     bytes32 public constant WITHDRAW_TYPEHASH =
         keccak256("Withdraw(address owner,uint256 amount,uint256 nonce,uint256 deadline)");
