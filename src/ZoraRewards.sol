@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
-
+import "./lib/EIP712.sol";
 import "./interfaces/IZoraRewards.sol";
 
 contract ZoraRewards is IZoraRewards, EIP712 {
