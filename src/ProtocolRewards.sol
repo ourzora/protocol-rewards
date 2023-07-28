@@ -12,7 +12,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
     mapping(address => uint256) public balanceOf;
     mapping(address => uint256) public nonces;
 
-    constructor() payable EIP712("ZoraRewards", "1") { }
+    constructor() payable EIP712("ProtocolRewards", "1") { }
 
     function totalSupply() external view returns (uint256) {
         return address(this).balance;
