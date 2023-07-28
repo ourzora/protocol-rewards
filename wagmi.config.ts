@@ -4,9 +4,12 @@ export default defineConfig({
   out: 'dist/index.ts',
   contracts: [
     {
-      name: 'ZoraRewards',
+      name: 'ProtocolRewards',
       address: {
-        999: '0x76CC78EF3aafD52e716a8e37F3dBbE0C42c51d54',
+        5: '0x8Ca5e648C5dFEfcdDa06d627F4b490B719ccFD98',
+        420: '0x421B6ad0CdD20bE3636F3511B6ae244d8F668dB1',
+        999: '0xF62b0d56BA617F803DF1C464C519FF7D29451B2f',
+        84531: '0xd34872BE0cdb6b09d45FCa067B07f04a1A9aE1aE',
       },
       abi: [
         {
@@ -81,10 +84,16 @@ export default defineConfig({
               type: 'address',
             },
             {
-              indexed: true,
+              indexed: false,
               internalType: 'uint256',
               name: 'amount',
               type: 'uint256',
+            },
+            {
+              indexed: false,
+              internalType: 'string',
+              name: 'comment',
+              type: 'string',
             },
           ],
           name: 'Deposit',
@@ -221,8 +230,42 @@ export default defineConfig({
           type: 'function',
         },
         {
-          inputs: [],
+          inputs: [
+            {
+              internalType: 'address',
+              name: 'recipient',
+              type: 'address',
+            },
+            {
+              internalType: 'string',
+              name: 'comment',
+              type: 'string',
+            },
+          ],
           name: 'deposit',
+          outputs: [],
+          stateMutability: 'payable',
+          type: 'function',
+        },
+        {
+          inputs: [
+            {
+              internalType: 'address[]',
+              name: 'recipients',
+              type: 'address[]',
+            },
+            {
+              internalType: 'uint256[]',
+              name: 'amounts',
+              type: 'uint256[]',
+            },
+            {
+              internalType: 'string',
+              name: 'comment',
+              type: 'string',
+            },
+          ],
+          name: 'depositBatch',
           outputs: [],
           stateMutability: 'payable',
           type: 'function',
@@ -281,37 +324,6 @@ export default defineConfig({
             },
           ],
           name: 'depositRewards',
-          outputs: [],
-          stateMutability: 'payable',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address',
-              name: 'recipient',
-              type: 'address',
-            },
-          ],
-          name: 'depositTo',
-          outputs: [],
-          stateMutability: 'payable',
-          type: 'function',
-        },
-        {
-          inputs: [
-            {
-              internalType: 'address[]',
-              name: 'recipients',
-              type: 'address[]',
-            },
-            {
-              internalType: 'uint256[]',
-              name: 'amounts',
-              type: 'uint256[]',
-            },
-          ],
-          name: 'depositToBatch',
           outputs: [],
           stateMutability: 'payable',
           type: 'function',
@@ -441,10 +453,6 @@ export default defineConfig({
           outputs: [],
           stateMutability: 'nonpayable',
           type: 'function',
-        },
-        {
-          stateMutability: 'payable',
-          type: 'receive',
         },
       ],
     },
