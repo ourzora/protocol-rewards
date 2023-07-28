@@ -17,17 +17,20 @@ contract ZoraRewards is IZoraRewards, EIP712 {
         return address(this).balance;
     }
 
-    function depositTo(address recipient) external payable {
+    function depositTo(address recipient, string calldata comment) external payable {
         if (recipient == address(0)) revert ADDRESS_ZERO();
 
         unchecked {
             balanceOf[recipient] += msg.value;
         }
 
-        emit Deposit(msg.sender, recipient, msg.value);
+        emit Deposit(msg.sender, recipient, msg.value, comment);
     }
 
-    function depositToBatch(address[] calldata recipients, uint256[] calldata amounts) external payable {
+    function depositToBatch(address[] calldata recipients, uint256[] calldata amounts, string calldata comment)
+        external
+        payable
+    {
         uint256 numRecipients = recipients.length;
 
         if (numRecipients != amounts.length) revert ARRAY_LENGTH_MISMATCH();
@@ -57,7 +60,7 @@ contract ZoraRewards is IZoraRewards, EIP712 {
                 balanceOf[currentRecipient] += currentAmount;
             }
 
-            emit Deposit(msg.sender, currentRecipient, currentAmount);
+            emit Deposit(msg.sender, currentRecipient, currentAmount, comment);
 
             unchecked {
                 ++i;
