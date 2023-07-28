@@ -1,7 +1,7 @@
 {
-  "name": "@zoralabs/zora-rewards",
-  "version": "0.1.14",
-  "repository": "https://github.com/ourzora/zora-rewards.git",
+  "name": "@zoralabs/protocol-rewards",
+  "version": "1.0.0",
+  "repository": "https://github.com/ourzora/protocol-rewards.git",
   "license": "MIT",
   "files": [
     "dist/"
