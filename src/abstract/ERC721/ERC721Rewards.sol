@@ -1,34 +1,25 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import { MintRewards } from "../MintRewards.sol";
+import { ProtocolRewards } from "../ProtocolRewards.sol";
 
 contract ERC721RewardsStorage {
     address public createReferral;
 }
 
-abstract contract ERC721Rewards is ERC721RewardsStorage, MintRewards {
+abstract contract ERC721Rewards is ProtocolRewards {
     constructor(address _zoraRewards, address _zoraRewardRecipient)
         payable
-        MintRewards(_zoraRewards, _zoraRewardRecipient)
+        ProtocolRewards(_zoraRewards, _zoraRewardRecipient)
     { }
-
-    function updateCreateReferral(address recipient) external {
-        if (msg.sender != createReferral) revert ONLY_CREATE_REFERRAL();
-
-        _setCreateReferral(recipient);
-    }
-
-    function _setCreateReferral(address recipient) internal {
-        createReferral = recipient;
-    }
 
     function _handleRewards(
         uint256 msgValue,
         uint256 numTokens,
         uint256 salePrice,
         address creator,
-        address mintReferral
+        address mintReferral,
+        address createReferral
     ) internal {
         if (creator == address(0)) revert CREATOR_FUNDS_RECIPIENT_NOT_SET();
 
