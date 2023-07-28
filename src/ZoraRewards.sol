@@ -17,14 +17,6 @@ contract ZoraRewards is IZoraRewards, EIP712 {
         return address(this).balance;
     }
 
-    function deposit() public payable {
-        unchecked {
-            balanceOf[msg.sender] += msg.value;
-        }
-
-        emit Deposit(msg.sender, msg.sender, msg.value);
-    }
-
     function depositTo(address recipient) external payable {
         if (recipient == address(0)) revert ADDRESS_ZERO();
 
@@ -152,9 +144,5 @@ contract ZoraRewards is IZoraRewards, EIP712 {
         if (!success) revert TRANSFER_FAILED();
 
         emit Withdraw(owner, amount);
-    }
-
-    receive() external payable {
-        deposit();
     }
 }

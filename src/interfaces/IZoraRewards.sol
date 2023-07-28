@@ -38,7 +38,6 @@ interface IZoraRewards {
         address zora,
         uint256 zoraReward
     ) external payable;
-    function deposit() external payable;
     function depositTo(address recipient) external payable;
     function depositToBatch(address[] calldata recipients, uint256[] calldata amounts) external payable;
     function withdraw(uint256 amount) external;
