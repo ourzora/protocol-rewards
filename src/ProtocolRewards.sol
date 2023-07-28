@@ -18,7 +18,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
         return address(this).balance;
     }
 
-    function depositTo(address recipient, string calldata comment) external payable {
+    function deposit(address recipient, string calldata comment) external payable {
         if (recipient == address(0)) revert ADDRESS_ZERO();
 
         unchecked {
@@ -28,7 +28,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
         emit Deposit(msg.sender, recipient, msg.value, comment);
     }
 
-    function depositToBatch(address[] calldata recipients, uint256[] calldata amounts, string calldata comment)
+    function depositBatch(address[] calldata recipients, uint256[] calldata amounts, string calldata comment)
         external
         payable
     {
