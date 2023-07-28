@@ -141,7 +141,6 @@ contract ZoraRewards is IZoraRewards, EIP712 {
             balanceOf[owner] -= amount;
         }
 
-        // TODO update gas limit
         (bool success,) = owner.call{ value: amount, gas: WITHDRAW_GAS_LIMIT }("");
 
         if (!success) revert TRANSFER_FAILED();
