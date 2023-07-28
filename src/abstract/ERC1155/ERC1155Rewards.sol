@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import { MintRewards } from "../common/MintRewards.sol";
+import { MintRewards } from "../MintRewards.sol";
 
 contract ERC1155RewardsStorage {
     mapping(uint256 => address) public createReferrals;
