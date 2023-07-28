@@ -4,10 +4,10 @@ pragma solidity 0.8.17;
 import { ERC721 } from "./ERC721.sol";
 import { ERC1155 } from "./ERC1155.sol";
 
-import { ERC721Rewards } from "../../src/ERC721/ERC721Rewards.sol";
-import { ERC1155Rewards } from "../../src/ERC1155/ERC1155Rewards.sol";
+import { ERC721Rewards, ERC721RewardsStorage } from "../../src/abstract/ERC721/ERC721Rewards.sol";
+import { ERC1155Rewards, ERC1155RewardsStorage } from "../../src/abstract/ERC1155/ERC1155Rewards.sol";
 
-contract MockERC721 is ERC721, ERC721Rewards {
+contract MockERC721 is ERC721, ERC721Rewards, ERC721RewardsStorage {
     address public creator;
     uint256 public salePrice;
     uint256 public currentTokenId;
@@ -25,7 +25,7 @@ contract MockERC721 is ERC721, ERC721Rewards {
     }
 
     function mintWithRewards(address to, uint256 numTokens, address mintReferral) external payable {
-        _handleRewards(msg.value, numTokens, salePrice, creator, mintReferral);
+        _handleRewards(msg.value, numTokens, salePrice, creator, mintReferral, createReferral);
 
         for (uint256 i; i < numTokens; ++i) {
             _mint(to, currentTokenId++);
@@ -33,7 +33,7 @@ contract MockERC721 is ERC721, ERC721Rewards {
     }
 }
 
-contract MockERC1155 is ERC1155, ERC1155Rewards {
+contract MockERC1155 is ERC1155, ERC1155Rewards, ERC1155RewardsStorage {
     error MOCK_ERC1155_INVALID_REMAINING_VALUE();
 
     address public creator;
@@ -52,7 +52,8 @@ contract MockERC1155 is ERC1155, ERC1155Rewards {
     }
 
     function mintWithRewards(address to, uint256 tokenId, uint256 numTokens, address mintReferral) external payable {
-        uint256 remainingValue = _handleRewardsAndGetValueSent(msg.value, tokenId, numTokens, creator, mintReferral);
+        uint256 remainingValue =
+            _handleRewardsAndGetValueSent(msg.value, numTokens, creator, mintReferral, createReferrals[tokenId]);
 
         uint256 expectedRemainingValue = salePrice * numTokens;
 
