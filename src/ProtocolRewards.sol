@@ -127,7 +127,11 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
     function withdrawWithSig(address owner, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external {
         if (block.timestamp > deadline) revert SIGNATURE_DEADLINE_EXPIRED();
 
-        bytes32 withdrawHash = keccak256(abi.encode(WITHDRAW_TYPEHASH, owner, amount, nonces[owner]++, deadline));
+        bytes32 withdrawHash;
+
+        unchecked {
+            withdrawHash = keccak256(abi.encode(WITHDRAW_TYPEHASH, owner, amount, nonces[owner]++, deadline));
+        }
 
         bytes32 digest = _hashTypedDataV4(withdrawHash);
 
