@@ -3,17 +3,23 @@ pragma solidity 0.8.17;
 
 import { MintRewards } from "../common/MintRewards.sol";
 
-abstract contract ERC1155Rewards is MintRewards {
+contract ERC1155RewardsStorage {
+    mapping(uint256 => address) public createReferrals;
+}
+
+abstract contract ERC1155Rewards is MintRewards, ERC1155RewardsStorage {
     constructor(address _zoraRewards, address _zoraRewardRecipient)
         payable
         MintRewards(_zoraRewards, _zoraRewardRecipient)
     { }
 
-    mapping(uint256 => address) public createReferrals;
-
     function updateCreateReferral(uint256 tokenId, address recipient) external {
         if (msg.sender != createReferrals[tokenId]) revert ONLY_CREATE_REFERRAL();
 
+        _setCreateReferral(tokenId, recipient);
+    }
+
+    function _setCreateReferral(uint256 tokenId, address recipient) internal {
         createReferrals[tokenId] = recipient;
     }
 
