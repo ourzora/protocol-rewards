@@ -19,10 +19,10 @@ contract ERC1155RewardsTest is ProtocolRewardsTest {
 
         uint256 totalReward = mockERC1155.computeTotalReward(numTokens);
 
-        vm.deal(alice, totalReward);
+        vm.deal(collector, totalReward);
 
-        vm.prank(alice);
-        mockERC1155.mintWithRewards{ value: totalReward }(alice, 0, numTokens, mintReferral);
+        vm.prank(collector);
+        mockERC1155.mintWithRewards{ value: totalReward }(collector, 0, numTokens, mintReferral);
 
         (
             uint256 creatorReward,
@@ -49,10 +49,10 @@ contract ERC1155RewardsTest is ProtocolRewardsTest {
         uint256 totalSale = numTokens * pricePerToken;
         uint256 totalValue = totalReward + totalSale;
 
-        vm.deal(alice, totalValue);
+        vm.deal(collector, totalValue);
 
-        vm.prank(alice);
-        mockERC1155.mintWithRewards{ value: totalValue }(alice, 0, numTokens, mintReferral);
+        vm.prank(collector);
+        mockERC1155.mintWithRewards{ value: totalValue }(collector, 0, numTokens, mintReferral);
 
         (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) =
             mockERC1155.computePaidMintRewards(numTokens);
@@ -71,10 +71,10 @@ contract ERC1155RewardsTest is ProtocolRewardsTest {
 
         uint256 totalReward = mockERC1155.computeTotalReward(numTokens);
 
-        vm.deal(alice, totalReward);
+        vm.deal(collector, totalReward);
 
-        vm.prank(alice);
-        mockERC1155.mintWithRewards{ value: totalReward }(alice, 0, numTokens, address(0));
+        vm.prank(collector);
+        mockERC1155.mintWithRewards{ value: totalReward }(collector, 0, numTokens, address(0));
 
         (
             uint256 creatorReward,
@@ -101,10 +101,10 @@ contract ERC1155RewardsTest is ProtocolRewardsTest {
         uint256 totalSale = numTokens * pricePerToken;
         uint256 totalValue = totalReward + totalSale;
 
-        vm.deal(alice, totalValue);
+        vm.deal(collector, totalValue);
 
-        vm.prank(alice);
-        mockERC1155.mintWithRewards{ value: totalValue }(alice, 0, numTokens, address(0));
+        vm.prank(collector);
+        mockERC1155.mintWithRewards{ value: totalValue }(collector, 0, numTokens, address(0));
 
         (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) =
             mockERC1155.computePaidMintRewards(numTokens);
@@ -118,7 +118,7 @@ contract ERC1155RewardsTest is ProtocolRewardsTest {
         vm.assume(numTokens > 0);
 
         vm.expectRevert(abi.encodeWithSignature("INVALID_ETH_AMOUNT()"));
-        mockERC1155.mintWithRewards(alice, 0, numTokens, mintReferral);
+        mockERC1155.mintWithRewards(collector, 0, numTokens, mintReferral);
     }
 
     function testRevert1155PaidMintInvalidEth(uint16 numTokens, uint256 pricePerToken) public {
@@ -128,7 +128,7 @@ contract ERC1155RewardsTest is ProtocolRewardsTest {
         mockERC1155.setSalePrice(pricePerToken);
 
         vm.expectRevert(abi.encodeWithSignature("INVALID_ETH_AMOUNT()"));
-        mockERC1155.mintWithRewards(alice, 0, numTokens, mintReferral);
+        mockERC1155.mintWithRewards(collector, 0, numTokens, mintReferral);
     }
 
     function testRevert1155PaidMintInvalidEthRemaining(uint16 numTokens, uint256 pricePerToken) public {
@@ -141,10 +141,10 @@ contract ERC1155RewardsTest is ProtocolRewardsTest {
         uint256 totalSale = numTokens * pricePerToken;
         uint256 totalValue = totalReward + totalSale;
 
-        vm.deal(alice, totalValue);
+        vm.deal(collector, totalValue);
 
-        vm.prank(alice);
+        vm.prank(collector);
         vm.expectRevert(abi.encodeWithSignature("MOCK_ERC1155_INVALID_REMAINING_VALUE()"));
-        mockERC1155.mintWithRewards{ value: totalValue - 1 }(alice, 0, numTokens, mintReferral);
+        mockERC1155.mintWithRewards{ value: totalValue - 1 }(collector, 0, numTokens, mintReferral);
     }
 }

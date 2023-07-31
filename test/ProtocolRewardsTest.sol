@@ -10,8 +10,7 @@ import "./utils/MockNFTs.sol";
 contract ProtocolRewardsTest is Test {
     ProtocolRewards internal protocolRewards;
 
-    address internal alice;
-    address internal bob;
+    address internal collector;
     address internal creator;
     address internal mintReferral;
     address internal createReferral;
@@ -22,8 +21,7 @@ contract ProtocolRewardsTest is Test {
 
         vm.label(address(protocolRewards), "PROTOCOL_REWARDS");
 
-        alice = makeAddr("alice");
-        bob = makeAddr("bob");
+        collector = makeAddr("collector");
         creator = makeAddr("creator");
         mintReferral = makeAddr("mintReferral");
         createReferral = makeAddr("createReferral");
