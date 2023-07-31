@@ -9,16 +9,18 @@ abstract contract RewardSplits {
     error INVALID_ETH_AMOUNT();
     error ONLY_CREATE_REFERRAL();
 
-    uint256 internal constant TOTAL_REWARD_PER_MINT = 0.000999 ether;
+    uint256 internal constant TOTAL_REWARD_PER_MINT = 0.000777 ether;
 
-    uint256 internal constant MINT_REFERRAL_FREE_MINT_REWARD = 0.000111 ether;
-    uint256 internal constant CREATE_REFERRAL_FREE_MINT_REWARD = 0.000111 ether;
-    uint256 internal constant MINT_REFERRAL_PAID_MINT_REWARD = 0.000333 ether;
-    uint256 internal constant CREATE_REFERRAL_PAID_MINT_REWARD = 0.000333 ether;
-
-    uint256 internal constant CREATOR_REWARD = 0.000444 ether;
+    uint256 internal constant CREATOR_REWARD = 0.000333 ether;
     uint256 internal constant FIRST_MINTER_REWARD = 0.000111 ether;
-    uint256 internal constant ZORA_REWARD = 0.000222 ether;
+
+    uint256 internal constant CREATE_REFERRAL_FREE_MINT_REWARD = 0.000111 ether;
+    uint256 internal constant MINT_REFERRAL_FREE_MINT_REWARD = 0.000111 ether;
+    uint256 internal constant ZORA_FREE_MINT_REWARD = 0.000111 ether;
+
+    uint256 internal constant MINT_REFERRAL_PAID_MINT_REWARD = 0.000222 ether;
+    uint256 internal constant CREATE_REFERRAL_PAID_MINT_REWARD = 0.000222 ether;
+    uint256 internal constant ZORA_PAID_MINT_REWARD = 0.000222 ether;
 
     address internal immutable ZORA_REWARD_RECIPIENT;
     IProtocolRewards internal immutable PROTOCOL_REWARDS;
@@ -51,7 +53,7 @@ abstract contract RewardSplits {
         mintReferralReward = numTokens * MINT_REFERRAL_FREE_MINT_REWARD;
         createReferralReward = numTokens * CREATE_REFERRAL_FREE_MINT_REWARD;
         firstMinterReward = numTokens * FIRST_MINTER_REWARD;
-        zoraReward = numTokens * ZORA_REWARD;
+        zoraReward = numTokens * ZORA_FREE_MINT_REWARD;
     }
 
     function computePaidMintRewards(uint256 numTokens)
@@ -67,7 +69,7 @@ abstract contract RewardSplits {
         mintReferralReward = numTokens * MINT_REFERRAL_PAID_MINT_REWARD;
         createReferralReward = numTokens * CREATE_REFERRAL_PAID_MINT_REWARD;
         firstMinterReward = numTokens * FIRST_MINTER_REWARD;
-        zoraReward = numTokens * ZORA_REWARD;
+        zoraReward = numTokens * ZORA_PAID_MINT_REWARD;
     }
 
     function _depositFreeMintRewards(
@@ -100,7 +102,7 @@ abstract contract RewardSplits {
             mintReferralReward,
             createReferral,
             createReferralReward,
-            creator, //
+            creator,
             firstMinterReward,
             ZORA_REWARD_RECIPIENT,
             zoraReward
@@ -132,7 +134,7 @@ abstract contract RewardSplits {
             mintReferralReward,
             createReferral,
             createReferralReward,
-            creator, //
+            creator,
             firstMinterReward,
             ZORA_REWARD_RECIPIENT,
             zoraReward
