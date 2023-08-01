@@ -5,7 +5,6 @@ import {EIP712} from "./lib/EIP712.sol";
 import {IProtocolRewards} from "./interfaces/IProtocolRewards.sol";
 
 contract ProtocolRewards is IProtocolRewards, EIP712 {
-    uint256 internal constant WITHDRAW_GAS_LIMIT = 200_000;
     bytes32 public constant WITHDRAW_TYPEHASH = keccak256("Withdraw(address owner,uint256 amount,uint256 nonce,uint256 deadline)");
 
     mapping(address => uint256) public balanceOf;
@@ -135,7 +134,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
 
         emit Withdraw(owner, amount);
 
-        (bool success, ) = owner.call{value: amount, gas: WITHDRAW_GAS_LIMIT}("");
+        (bool success, ) = owner.call{value: amount}("");
 
         if (!success) {
             revert TRANSFER_FAILED();
@@ -171,7 +170,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
 
         emit Withdraw(owner, amount);
 
-        (bool success, ) = owner.call{value: amount, gas: WITHDRAW_GAS_LIMIT}("");
+        (bool success, ) = owner.call{value: amount}("");
 
         if (!success) {
             revert TRANSFER_FAILED();
