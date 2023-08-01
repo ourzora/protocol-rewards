@@ -22,16 +22,16 @@ abstract contract RewardSplits {
     uint256 internal constant CREATE_REFERRAL_PAID_MINT_REWARD = 0.000222 ether;
     uint256 internal constant ZORA_PAID_MINT_REWARD = 0.000222 ether;
 
-    address internal immutable ZORA_REWARD_RECIPIENT;
-    IProtocolRewards internal immutable PROTOCOL_REWARDS;
+    address internal immutable zoraRewardRecipient;
+    IProtocolRewards internal immutable protocolRewards;
 
     constructor(address _protocolRewards, address _zoraRewardRecipient) payable {
         if (_protocolRewards == address(0) || _zoraRewardRecipient == address(0)) {
             revert INVALID_ADDRESS_ZERO();
         }
 
-        PROTOCOL_REWARDS = IProtocolRewards(_protocolRewards);
-        ZORA_REWARD_RECIPIENT = _zoraRewardRecipient;
+        protocolRewards = IProtocolRewards(_protocolRewards);
+        zoraRewardRecipient = _zoraRewardRecipient;
     }
 
     function computeTotalReward(uint256 numTokens) public pure returns (uint256) {
@@ -88,14 +88,14 @@ abstract contract RewardSplits {
         ) = computeFreeMintRewards(numTokens);
 
         if (mintReferral == address(0)) {
-            mintReferral = ZORA_REWARD_RECIPIENT;
+            mintReferral = zoraRewardRecipient;
         }
 
         if (createReferral == address(0)) {
-            createReferral = ZORA_REWARD_RECIPIENT;
+            createReferral = zoraRewardRecipient;
         }
 
-        PROTOCOL_REWARDS.depositRewards{ value: totalReward }(
+        protocolRewards.depositRewards{ value: totalReward }(
             creator,
             creatorReward,
             mintReferral,
@@ -104,7 +104,7 @@ abstract contract RewardSplits {
             createReferralReward,
             creator,
             firstMinterReward,
-            ZORA_REWARD_RECIPIENT,
+            zoraRewardRecipient,
             zoraReward
         );
     }
@@ -120,14 +120,14 @@ abstract contract RewardSplits {
             computePaidMintRewards(numTokens);
 
         if (mintReferral == address(0)) {
-            mintReferral = ZORA_REWARD_RECIPIENT;
+            mintReferral = zoraRewardRecipient;
         }
 
         if (createReferral == address(0)) {
-            createReferral = ZORA_REWARD_RECIPIENT;
+            createReferral = zoraRewardRecipient;
         }
 
-        PROTOCOL_REWARDS.depositRewards{ value: totalReward }(
+        protocolRewards.depositRewards{ value: totalReward }(
             address(0),
             0,
             mintReferral,
@@ -136,7 +136,7 @@ abstract contract RewardSplits {
             createReferralReward,
             creator,
             firstMinterReward,
-            ZORA_REWARD_RECIPIENT,
+            zoraRewardRecipient,
             zoraReward
         );
     }

@@ -19,7 +19,7 @@ contract ProtocolRewardsTest is Test {
     function setUp() public virtual {
         protocolRewards = new ProtocolRewards();
 
-        vm.label(address(protocolRewards), "PROTOCOL_REWARDS");
+        vm.label(address(protocolRewards), "protocolRewards");
 
         collector = makeAddr("collector");
         creator = makeAddr("creator");

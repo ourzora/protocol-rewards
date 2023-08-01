@@ -150,6 +150,8 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
             balanceOf[owner] -= amount;
         }
 
+        emit Withdraw(owner, amount);
+
         (bool success, ) = owner.call{value: amount, gas: WITHDRAW_GAS_LIMIT}(
             ""
         );
@@ -157,8 +159,6 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
         if (!success) {
             revert TRANSFER_FAILED();
         }
-
-        emit Withdraw(owner, amount);
     }
 
     function withdrawWithSig(
@@ -203,6 +203,8 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
             balanceOf[owner] -= amount;
         }
 
+        emit Withdraw(owner, amount);
+
         (bool success, ) = owner.call{value: amount, gas: WITHDRAW_GAS_LIMIT}(
             ""
         );
@@ -210,7 +212,5 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
         if (!success) {
             revert TRANSFER_FAILED();
         }
-
-        emit Withdraw(owner, amount);
     }
 }
