@@ -1,17 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import { RewardSplits } from "../RewardSplits.sol";
+import {RewardSplits} from "../RewardSplits.sol";
 
 contract ERC1155RewardsStorage {
     mapping(uint256 => address) public createReferrals;
 }
 
 abstract contract ERC1155Rewards is RewardSplits {
-    constructor(address _protocolRewards, address _zoraRewardRecipient)
-        payable
-        RewardSplits(_protocolRewards, _zoraRewardRecipient)
-    { }
+    constructor(address _protocolRewards, address _zoraRewardRecipient) payable RewardSplits(_protocolRewards, _zoraRewardRecipient) {}
 
     function _handleRewardsAndGetValueSent(
         uint256 msgValue,
@@ -20,7 +17,9 @@ abstract contract ERC1155Rewards is RewardSplits {
         address mintReferral,
         address createReferral
     ) internal returns (uint256) {
-        if (creator == address(0)) revert CREATOR_FUNDS_RECIPIENT_NOT_SET();
+        if (creator == address(0)) {
+            revert CREATOR_FUNDS_RECIPIENT_NOT_SET();
+        }
 
         uint256 totalReward = computeTotalReward(numTokens);
 

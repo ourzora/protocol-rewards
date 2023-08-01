@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 import "forge-std/Script.sol";
 
-import { ProtocolRewards } from "../src/ProtocolRewards.sol";
+import {ProtocolRewards} from "../src/ProtocolRewards.sol";
 
 contract DeployScript is Script {
     uint256 internal deployerPK;

@@ -38,10 +38,12 @@ interface IProtocolRewards {
         address zora,
         uint256 zoraReward
     ) external payable;
+
     function deposit(address recipient, string calldata comment) external payable;
-    function depositBatch(address[] calldata recipients, uint256[] calldata amounts, string calldata comment)
-        external
-        payable;
+
+    function depositBatch(address[] calldata recipients, uint256[] calldata amounts, string calldata comment) external payable;
+
     function withdraw(uint256 amount) external;
+
     function withdrawWithSig(address owner, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external;
 }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import { IProtocolRewards } from "../interfaces/IProtocolRewards.sol";
+import {IProtocolRewards} from "../interfaces/IProtocolRewards.sol";
 
 abstract contract RewardSplits {
     error CREATOR_FUNDS_RECIPIENT_NOT_SET();
@@ -22,33 +22,25 @@ abstract contract RewardSplits {
     uint256 internal constant CREATE_REFERRAL_PAID_MINT_REWARD = 0.000222 ether;
     uint256 internal constant ZORA_PAID_MINT_REWARD = 0.000222 ether;
 
-    address internal immutable ZORA_REWARD_RECIPIENT;
-    IProtocolRewards internal immutable PROTOCOL_REWARDS;
+    address internal immutable zoraRewardRecipient;
+    IProtocolRewards internal immutable protocolRewards;
 
     constructor(address _protocolRewards, address _zoraRewardRecipient) payable {
         if (_protocolRewards == address(0) || _zoraRewardRecipient == address(0)) {
             revert INVALID_ADDRESS_ZERO();
         }
 
-        PROTOCOL_REWARDS = IProtocolRewards(_protocolRewards);
-        ZORA_REWARD_RECIPIENT = _zoraRewardRecipient;
+        protocolRewards = IProtocolRewards(_protocolRewards);
+        zoraRewardRecipient = _zoraRewardRecipient;
     }
 
     function computeTotalReward(uint256 numTokens) public pure returns (uint256) {
         return numTokens * TOTAL_REWARD_PER_MINT;
     }
 
-    function computeFreeMintRewards(uint256 numTokens)
-        public
-        pure
-        returns (
-            uint256 creatorReward,
-            uint256 mintReferralReward,
-            uint256 createReferralReward,
-            uint256 firstMinterReward,
-            uint256 zoraReward
-        )
-    {
+    function computeFreeMintRewards(
+        uint256 numTokens
+    ) public pure returns (uint256 creatorReward, uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) {
         creatorReward = numTokens * CREATOR_REWARD;
         mintReferralReward = numTokens * MINT_REFERRAL_FREE_MINT_REWARD;
         createReferralReward = numTokens * CREATE_REFERRAL_FREE_MINT_REWARD;
@@ -56,29 +48,16 @@ abstract contract RewardSplits {
         zoraReward = numTokens * ZORA_FREE_MINT_REWARD;
     }
 
-    function computePaidMintRewards(uint256 numTokens)
-        public
-        pure
-        returns (
-            uint256 mintReferralReward,
-            uint256 createReferralReward,
-            uint256 firstMinterReward,
-            uint256 zoraReward
-        )
-    {
+    function computePaidMintRewards(
+        uint256 numTokens
+    ) public pure returns (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) {
         mintReferralReward = numTokens * MINT_REFERRAL_PAID_MINT_REWARD;
         createReferralReward = numTokens * CREATE_REFERRAL_PAID_MINT_REWARD;
         firstMinterReward = numTokens * FIRST_MINTER_REWARD;
         zoraReward = numTokens * ZORA_PAID_MINT_REWARD;
     }
 
-    function _depositFreeMintRewards(
-        uint256 totalReward,
-        uint256 numTokens,
-        address creator,
-        address mintReferral,
-        address createReferral
-    ) internal {
+    function _depositFreeMintRewards(uint256 totalReward, uint256 numTokens, address creator, address mintReferral, address createReferral) internal {
         (
             uint256 creatorReward,
             uint256 mintReferralReward,
@@ -88,14 +67,14 @@ abstract contract RewardSplits {
         ) = computeFreeMintRewards(numTokens);
 
         if (mintReferral == address(0)) {
-            mintReferral = ZORA_REWARD_RECIPIENT;
+            mintReferral = zoraRewardRecipient;
         }
 
         if (createReferral == address(0)) {
-            createReferral = ZORA_REWARD_RECIPIENT;
+            createReferral = zoraRewardRecipient;
         }
 
-        PROTOCOL_REWARDS.depositRewards{ value: totalReward }(
+        protocolRewards.depositRewards{value: totalReward}(
             creator,
             creatorReward,
             mintReferral,
@@ -104,30 +83,23 @@ abstract contract RewardSplits {
             createReferralReward,
             creator,
             firstMinterReward,
-            ZORA_REWARD_RECIPIENT,
+            zoraRewardRecipient,
             zoraReward
         );
     }
 
-    function _depositPaidMintRewards(
-        uint256 totalReward,
-        uint256 numTokens,
-        address creator,
-        address mintReferral,
-        address createReferral
-    ) internal {
-        (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) =
-            computePaidMintRewards(numTokens);
+    function _depositPaidMintRewards(uint256 totalReward, uint256 numTokens, address creator, address mintReferral, address createReferral) internal {
+        (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) = computePaidMintRewards(numTokens);
 
         if (mintReferral == address(0)) {
-            mintReferral = ZORA_REWARD_RECIPIENT;
+            mintReferral = zoraRewardRecipient;
         }
 
         if (createReferral == address(0)) {
-            createReferral = ZORA_REWARD_RECIPIENT;
+            createReferral = zoraRewardRecipient;
         }
 
-        PROTOCOL_REWARDS.depositRewards{ value: totalReward }(
+        protocolRewards.depositRewards{value: totalReward}(
             address(0),
             0,
             mintReferral,
@@ -136,7 +108,7 @@ abstract contract RewardSplits {
             createReferralReward,
             creator,
             firstMinterReward,
-            ZORA_REWARD_RECIPIENT,
+            zoraRewardRecipient,
             zoraReward
         );
     }
