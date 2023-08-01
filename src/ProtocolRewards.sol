@@ -21,9 +21,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
             revert ADDRESS_ZERO();
         }
 
-        unchecked {
-            balanceOf[recipient] += msg.value;
-        }
+        balanceOf[recipient] += msg.value;
 
         emit Deposit(msg.sender, recipient, msg.value, comment);
     }
@@ -60,9 +58,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
                 revert ADDRESS_ZERO();
             }
 
-            unchecked {
-                balanceOf[currentRecipient] += currentAmount;
-            }
+            balanceOf[currentRecipient] += currentAmount;
 
             emit Deposit(msg.sender, currentRecipient, currentAmount, comment);
 
@@ -128,9 +124,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
             revert INVALID_WITHDRAW();
         }
 
-        unchecked {
-            balanceOf[owner] -= amount;
-        }
+        balanceOf[owner] -= amount;
 
         emit Withdraw(owner, amount);
 
@@ -148,9 +142,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
 
         bytes32 withdrawHash;
 
-        unchecked {
-            withdrawHash = keccak256(abi.encode(WITHDRAW_TYPEHASH, owner, amount, nonces[owner]++, deadline));
-        }
+        withdrawHash = keccak256(abi.encode(WITHDRAW_TYPEHASH, owner, amount, nonces[owner]++, deadline));
 
         bytes32 digest = _hashTypedDataV4(withdrawHash);
 
@@ -164,9 +156,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
             revert INVALID_WITHDRAW();
         }
 
-        unchecked {
-            balanceOf[owner] -= amount;
-        }
+        balanceOf[owner] -= amount;
 
         emit Withdraw(owner, amount);
 
