@@ -6,10 +6,7 @@ import {IProtocolRewards} from "./interfaces/IProtocolRewards.sol";
 
 contract ProtocolRewards is IProtocolRewards, EIP712 {
     uint256 internal constant WITHDRAW_GAS_LIMIT = 200_000;
-    bytes32 public constant WITHDRAW_TYPEHASH =
-        keccak256(
-            "Withdraw(address owner,uint256 amount,uint256 nonce,uint256 deadline)"
-        );
+    bytes32 public constant WITHDRAW_TYPEHASH = keccak256("Withdraw(address owner,uint256 amount,uint256 nonce,uint256 deadline)");
 
     mapping(address => uint256) public balanceOf;
     mapping(address => uint256) public nonces;
@@ -20,10 +17,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
         return address(this).balance;
     }
 
-    function deposit(
-        address recipient,
-        string calldata comment
-    ) external payable {
+    function deposit(address recipient, string calldata comment) external payable {
         if (recipient == address(0)) {
             revert ADDRESS_ZERO();
         }
@@ -35,11 +29,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
         emit Deposit(msg.sender, recipient, msg.value, comment);
     }
 
-    function depositBatch(
-        address[] calldata recipients,
-        uint256[] calldata amounts,
-        string calldata comment
-    ) external payable {
+    function depositBatch(address[] calldata recipients, uint256[] calldata amounts, string calldata comment) external payable {
         uint256 numRecipients = recipients.length;
 
         if (numRecipients != amounts.length) {
@@ -95,14 +85,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
         address zora,
         uint256 zoraReward
     ) external payable {
-        if (
-            msg.value !=
-            (creatorReward +
-                mintReferralReward +
-                createReferralReward +
-                firstMinterReward +
-                zoraReward)
-        ) {
+        if (msg.value != (creatorReward + mintReferralReward + createReferralReward + firstMinterReward + zoraReward)) {
             revert INVALID_DEPOSIT();
         }
 
@@ -152,23 +135,14 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
 
         emit Withdraw(owner, amount);
 
-        (bool success, ) = owner.call{value: amount, gas: WITHDRAW_GAS_LIMIT}(
-            ""
-        );
+        (bool success, ) = owner.call{value: amount, gas: WITHDRAW_GAS_LIMIT}("");
 
         if (!success) {
             revert TRANSFER_FAILED();
         }
     }
 
-    function withdrawWithSig(
-        address owner,
-        uint256 amount,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external {
+    function withdrawWithSig(address owner, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external {
         if (block.timestamp > deadline) {
             revert SIGNATURE_DEADLINE_EXPIRED();
         }
@@ -176,15 +150,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
         bytes32 withdrawHash;
 
         unchecked {
-            withdrawHash = keccak256(
-                abi.encode(
-                    WITHDRAW_TYPEHASH,
-                    owner,
-                    amount,
-                    nonces[owner]++,
-                    deadline
-                )
-            );
+            withdrawHash = keccak256(abi.encode(WITHDRAW_TYPEHASH, owner, amount, nonces[owner]++, deadline));
         }
 
         bytes32 digest = _hashTypedDataV4(withdrawHash);
@@ -205,9 +171,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
 
         emit Withdraw(owner, amount);
 
-        (bool success, ) = owner.call{value: amount, gas: WITHDRAW_GAS_LIMIT}(
-            ""
-        );
+        (bool success, ) = owner.call{value: amount, gas: WITHDRAW_GAS_LIMIT}("");
 
         if (!success) {
             revert TRANSFER_FAILED();
