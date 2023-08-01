@@ -17,13 +17,8 @@ contract ERC721RewardsTest is ProtocolRewardsTest {
     function testValidateFreeMintTotalComputation(uint16 numTokens) public {
         uint256 expectedTotal = mockERC721.computeTotalReward(numTokens);
 
-        (
-            uint256 creatorReward,
-            uint256 mintReferralReward,
-            uint256 createReferralReward,
-            uint256 firstMinterReward,
-            uint256 zoraReward
-        ) = mockERC721.computeFreeMintRewards(numTokens);
+        (uint256 creatorReward, uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) = mockERC721
+            .computeFreeMintRewards(numTokens);
 
         uint256 actualTotal = creatorReward + mintReferralReward + createReferralReward + firstMinterReward + zoraReward;
 
@@ -33,8 +28,9 @@ contract ERC721RewardsTest is ProtocolRewardsTest {
     function testValidatePaidMintTotalComputation(uint32 numTokens) public {
         uint256 expectedTotal = mockERC721.computeTotalReward(numTokens);
 
-        (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) =
-            mockERC721.computePaidMintRewards(numTokens);
+        (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) = mockERC721.computePaidMintRewards(
+            numTokens
+        );
 
         uint256 actualTotal = mintReferralReward + createReferralReward + firstMinterReward + zoraReward;
 
@@ -49,15 +45,10 @@ contract ERC721RewardsTest is ProtocolRewardsTest {
         vm.deal(collector, totalReward);
 
         vm.prank(collector);
-        mockERC721.mintWithRewards{ value: totalReward }(collector, numTokens, mintReferral);
+        mockERC721.mintWithRewards{value: totalReward}(collector, numTokens, mintReferral);
 
-        (
-            uint256 creatorReward,
-            uint256 mintReferralReward,
-            uint256 createReferralReward,
-            uint256 firstMinterReward,
-            uint256 zoraReward
-        ) = mockERC721.computeFreeMintRewards(numTokens);
+        (uint256 creatorReward, uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) = mockERC721
+            .computeFreeMintRewards(numTokens);
 
         assertEq(protocolRewards.totalSupply(), totalReward);
         assertEq(protocolRewards.balanceOf(creator), creatorReward + firstMinterReward);
@@ -79,10 +70,11 @@ contract ERC721RewardsTest is ProtocolRewardsTest {
         vm.deal(collector, totalValue);
 
         vm.prank(collector);
-        mockERC721.mintWithRewards{ value: totalValue }(collector, numTokens, mintReferral);
+        mockERC721.mintWithRewards{value: totalValue}(collector, numTokens, mintReferral);
 
-        (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) =
-            mockERC721.computePaidMintRewards(numTokens);
+        (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) = mockERC721.computePaidMintRewards(
+            numTokens
+        );
 
         assertEq(protocolRewards.totalSupply(), totalReward);
         assertEq(protocolRewards.balanceOf(creator), firstMinterReward);
@@ -101,15 +93,10 @@ contract ERC721RewardsTest is ProtocolRewardsTest {
         vm.deal(collector, totalReward);
 
         vm.prank(collector);
-        mockERC721.mintWithRewards{ value: totalReward }(collector, numTokens, address(0));
+        mockERC721.mintWithRewards{value: totalReward}(collector, numTokens, address(0));
 
-        (
-            uint256 creatorReward,
-            uint256 mintReferralReward,
-            uint256 createReferralReward,
-            uint256 firstMinterReward,
-            uint256 zoraReward
-        ) = mockERC721.computeFreeMintRewards(numTokens);
+        (uint256 creatorReward, uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) = mockERC721
+            .computeFreeMintRewards(numTokens);
 
         assertEq(protocolRewards.totalSupply(), totalReward);
         assertEq(protocolRewards.balanceOf(creator), creatorReward + firstMinterReward);
@@ -131,10 +118,11 @@ contract ERC721RewardsTest is ProtocolRewardsTest {
         vm.deal(collector, totalValue);
 
         vm.prank(collector);
-        mockERC721.mintWithRewards{ value: totalValue }(collector, numTokens, address(0));
+        mockERC721.mintWithRewards{value: totalValue}(collector, numTokens, address(0));
 
-        (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) =
-            mockERC721.computePaidMintRewards(numTokens);
+        (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) = mockERC721.computePaidMintRewards(
+            numTokens
+        );
 
         assertEq(protocolRewards.totalSupply(), totalReward);
         assertEq(protocolRewards.balanceOf(creator), firstMinterReward);
@@ -149,7 +137,7 @@ contract ERC721RewardsTest is ProtocolRewardsTest {
         uint256 totalValue = mockERC721.computeTotalReward(numTokens);
 
         vm.expectRevert(abi.encodeWithSignature("CREATOR_FUNDS_RECIPIENT_NOT_SET()"));
-        mockERC721.mintWithRewards{ value: totalValue }(collector, numTokens, mintReferral);
+        mockERC721.mintWithRewards{value: totalValue}(collector, numTokens, mintReferral);
     }
 
     function testRevert721FreeMintInvalidEth(uint16 numTokens) public {
