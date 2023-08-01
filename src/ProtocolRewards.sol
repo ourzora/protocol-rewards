@@ -5,7 +5,7 @@ import {EIP712} from "./lib/EIP712.sol";
 import {IProtocolRewards} from "./interfaces/IProtocolRewards.sol";
 
 contract ProtocolRewards is IProtocolRewards, EIP712 {
-    uint256 internal constant WITHDRAW_GAS_LIMIT = 200_000;
+    uint256 constant DEFAULT_TRANSFER_GAS_LIMIT = 200_000;
     bytes32 public constant WITHDRAW_TYPEHASH = keccak256("Withdraw(address owner,uint256 amount,uint256 nonce,uint256 deadline)");
 
     mapping(address => uint256) public balanceOf;
@@ -123,6 +123,10 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
     }
 
     function withdraw(uint256 amount) external {
+        withdrawWithGasLimit(amount, DEFAULT_TRANSFER_GAS_LIMIT);
+    }
+
+    function withdrawWithGasLimit(uint256 amount, uint256 transferGasLimit) public {
         address owner = msg.sender;
 
         if (amount > balanceOf[owner]) {
@@ -135,7 +139,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
 
         emit Withdraw(owner, amount);
 
-        (bool success, ) = owner.call{value: amount, gas: WITHDRAW_GAS_LIMIT}("");
+        (bool success, ) = owner.call{value: amount, gas: transferGasLimit}("");
 
         if (!success) {
             revert TRANSFER_FAILED();
@@ -143,6 +147,10 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
     }
 
     function withdrawWithSig(address owner, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external {
+        withdrawWithSigAndGasLimit(owner, amount, deadline, DEFAULT_TRANSFER_GAS_LIMIT, v, r, s);
+    }
+
+    function withdrawWithSigAndGasLimit(address owner, uint256 amount, uint256 deadline, uint256 transferGasLimit, uint8 v, bytes32 r, bytes32 s) public {
         if (block.timestamp > deadline) {
             revert SIGNATURE_DEADLINE_EXPIRED();
         }
@@ -171,7 +179,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
 
         emit Withdraw(owner, amount);
 
-        (bool success, ) = owner.call{value: amount, gas: WITHDRAW_GAS_LIMIT}("");
+        (bool success, ) = owner.call{value: amount, gas: transferGasLimit}("");
 
         if (!success) {
             revert TRANSFER_FAILED();
