@@ -6,7 +6,8 @@ import {ERC1155} from "./ERC1155.sol";
 
 import {ERC721RewardsStorageV1} from "../../src/abstract/ERC721/ERC721RewardsStorageV1.sol";
 import {ERC721Rewards} from "../../src/abstract/ERC721/ERC721Rewards.sol";
-import {ERC1155Rewards, ERC1155RewardsStorage} from "../../src/abstract/ERC1155/ERC1155Rewards.sol";
+import {ERC1155Rewards} from "../../src/abstract/ERC1155/ERC1155Rewards.sol";
+import {ERC1155RewardsStorageV1} from "../../src/abstract/ERC1155/ERC1155RewardsStorageV1.sol";
 
 contract MockERC721 is ERC721, ERC721Rewards, ERC721RewardsStorageV1 {
     address public creator;
@@ -36,7 +37,7 @@ contract MockERC721 is ERC721, ERC721Rewards, ERC721RewardsStorageV1 {
     }
 }
 
-contract MockERC1155 is ERC1155, ERC1155Rewards, ERC1155RewardsStorage {
+contract MockERC1155 is ERC1155, ERC1155Rewards, ERC1155RewardsStorageV1 {
     error MOCK_ERC1155_INVALID_REMAINING_VALUE();
 
     address public creator;
