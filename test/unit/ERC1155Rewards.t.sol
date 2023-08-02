@@ -29,8 +29,8 @@ contract ERC1155RewardsTest is ProtocolRewardsTest {
 
         assertEq(protocolRewards.totalSupply(), totalReward);
         assertEq(protocolRewards.balanceOf(creator), settings.creatorReward + settings.firstMinterReward);
-        assertEq(protocolRewards.balanceOf(mintReferral), settings.mintReferralReward);
         assertEq(protocolRewards.balanceOf(createReferral), settings.createReferralReward);
+        assertEq(protocolRewards.balanceOf(mintReferral), settings.mintReferralReward);
         assertEq(protocolRewards.balanceOf(zora), settings.zoraReward);
     }
 
@@ -53,8 +53,8 @@ contract ERC1155RewardsTest is ProtocolRewardsTest {
 
         assertEq(protocolRewards.totalSupply(), totalReward);
         assertEq(protocolRewards.balanceOf(creator), settings.firstMinterReward);
-        assertEq(protocolRewards.balanceOf(mintReferral), settings.mintReferralReward);
         assertEq(protocolRewards.balanceOf(createReferral), settings.createReferralReward);
+        assertEq(protocolRewards.balanceOf(mintReferral), settings.mintReferralReward);
         assertEq(protocolRewards.balanceOf(zora), settings.zoraReward);
     }
 
