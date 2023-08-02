@@ -145,7 +145,6 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
         unchecked {
             withdrawHash = keccak256(abi.encode(WITHDRAW_TYPEHASH, owner, amount, nonces[owner]++, deadline));
         }
-        
 
         bytes32 digest = _hashTypedDataV4(withdrawHash);
 

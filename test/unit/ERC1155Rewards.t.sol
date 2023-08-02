@@ -25,8 +25,7 @@ contract ERC1155RewardsTest is ProtocolRewardsTest {
         vm.prank(collector);
         mockERC1155.mintWithRewards{value: totalReward}(collector, 0, numTokens, mintReferral);
 
-        RewardsSettings memory settings = mockERC1155
-            .computeFreeMintRewards(numTokens);
+        RewardsSettings memory settings = mockERC1155.computeFreeMintRewards(numTokens);
 
         assertEq(protocolRewards.totalSupply(), totalReward);
         assertEq(protocolRewards.balanceOf(creator), settings.creatorReward + settings.firstMinterReward);
@@ -50,9 +49,7 @@ contract ERC1155RewardsTest is ProtocolRewardsTest {
         vm.prank(collector);
         mockERC1155.mintWithRewards{value: totalValue}(collector, 0, numTokens, mintReferral);
 
-        RewardsSettings memory settings = mockERC1155.computePaidMintRewards(
-            numTokens
-        );
+        RewardsSettings memory settings = mockERC1155.computePaidMintRewards(numTokens);
 
         assertEq(protocolRewards.totalSupply(), totalReward);
         assertEq(protocolRewards.balanceOf(creator), settings.firstMinterReward);
@@ -73,8 +70,7 @@ contract ERC1155RewardsTest is ProtocolRewardsTest {
         vm.prank(collector);
         mockERC1155.mintWithRewards{value: totalReward}(collector, 0, numTokens, address(0));
 
-        RewardsSettings memory settings = mockERC1155
-            .computeFreeMintRewards(numTokens);
+        RewardsSettings memory settings = mockERC1155.computeFreeMintRewards(numTokens);
 
         assertEq(protocolRewards.totalSupply(), totalReward);
         assertEq(protocolRewards.balanceOf(creator), settings.creatorReward + settings.firstMinterReward);
@@ -98,9 +94,7 @@ contract ERC1155RewardsTest is ProtocolRewardsTest {
         vm.prank(collector);
         mockERC1155.mintWithRewards{value: totalValue}(collector, 0, numTokens, address(0));
 
-        RewardsSettings memory settings = mockERC1155.computePaidMintRewards(
-            numTokens
-        );
+        RewardsSettings memory settings = mockERC1155.computePaidMintRewards(numTokens);
 
         assertEq(protocolRewards.totalSupply(), totalReward);
         assertEq(protocolRewards.balanceOf(creator), settings.firstMinterReward);

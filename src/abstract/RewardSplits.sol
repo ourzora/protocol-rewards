@@ -17,8 +17,6 @@ abstract contract RewardSplits {
     error INVALID_ETH_AMOUNT();
     error ONLY_CREATE_REFERRAL();
 
-
-
     uint256 internal constant TOTAL_REWARD_PER_MINT = 0.000777 ether;
 
     uint256 internal constant CREATOR_REWARD = 0.000333 ether;
@@ -48,32 +46,29 @@ abstract contract RewardSplits {
         return numTokens * TOTAL_REWARD_PER_MINT;
     }
 
-    function computeFreeMintRewards(
-        uint256 numTokens
-    ) public pure returns (RewardsSettings memory) {
-        return RewardsSettings({
-            creatorReward: numTokens * CREATOR_REWARD,
-            mintReferralReward: numTokens * MINT_REFERRAL_FREE_MINT_REWARD,
-            createReferralReward: numTokens * CREATE_REFERRAL_FREE_MINT_REWARD,
-            firstMinterReward: numTokens * FIRST_MINTER_REWARD,
-            zoraReward: numTokens * ZORA_FREE_MINT_REWARD
-        });
+    function computeFreeMintRewards(uint256 numTokens) public pure returns (RewardsSettings memory) {
+        return
+            RewardsSettings({
+                creatorReward: numTokens * CREATOR_REWARD,
+                mintReferralReward: numTokens * MINT_REFERRAL_FREE_MINT_REWARD,
+                createReferralReward: numTokens * CREATE_REFERRAL_FREE_MINT_REWARD,
+                firstMinterReward: numTokens * FIRST_MINTER_REWARD,
+                zoraReward: numTokens * ZORA_FREE_MINT_REWARD
+            });
     }
 
-    function computePaidMintRewards(
-        uint256 numTokens
-    ) public pure returns (RewardsSettings memory) {
-        return RewardsSettings({
-            creatorReward: 0,
-            mintReferralReward: numTokens * MINT_REFERRAL_PAID_MINT_REWARD,
-            createReferralReward: numTokens * CREATE_REFERRAL_PAID_MINT_REWARD,
-            firstMinterReward: numTokens * FIRST_MINTER_REWARD,
-            zoraReward: numTokens * ZORA_PAID_MINT_REWARD
-        });
+    function computePaidMintRewards(uint256 numTokens) public pure returns (RewardsSettings memory) {
+        return
+            RewardsSettings({
+                creatorReward: 0,
+                mintReferralReward: numTokens * MINT_REFERRAL_PAID_MINT_REWARD,
+                createReferralReward: numTokens * CREATE_REFERRAL_PAID_MINT_REWARD,
+                firstMinterReward: numTokens * FIRST_MINTER_REWARD,
+                zoraReward: numTokens * ZORA_PAID_MINT_REWARD
+            });
     }
 
     function _depositFreeMintRewards(uint256 totalReward, uint256 numTokens, address creator, address mintReferral, address createReferral) internal {
-
         RewardsSettings memory settings = computeFreeMintRewards(numTokens);
 
         if (mintReferral == address(0)) {
