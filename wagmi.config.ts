@@ -6,10 +6,10 @@ export default defineConfig({
     {
       name: 'ProtocolRewards',
       address: {
-        5: '0x8Ca5e648C5dFEfcdDa06d627F4b490B719ccFD98',
-        420: '0x421B6ad0CdD20bE3636F3511B6ae244d8F668dB1',
-        999: '0xF62b0d56BA617F803DF1C464C519FF7D29451B2f',
-        84531: '0xd34872BE0cdb6b09d45FCa067B07f04a1A9aE1aE',
+        5: '0xD70de31dA9B9FD35aCa0D299f2850b4077024310',
+        420: '0x8237F421357F87a23ed0CFf3a5586172F210A21B',
+        999: '0x39Bcc1e15b8ec15684F17fEf298151F4A544B591',
+        84531: '0xF62b0d56BA617F803DF1C464C519FF7D29451B2f',
       },
       abi: [
         {
