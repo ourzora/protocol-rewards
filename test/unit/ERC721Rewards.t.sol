@@ -2,6 +2,7 @@
 pragma solidity 0.8.17;
 
 import "../ProtocolRewardsTest.sol";
+import {RewardsSettings} from "../../src/abstract/RewardSplits.sol";
 
 contract ERC721RewardsTest is ProtocolRewardsTest {
     MockERC721 internal mockERC721;
@@ -17,10 +18,10 @@ contract ERC721RewardsTest is ProtocolRewardsTest {
     function testValidateFreeMintTotalComputation(uint16 numTokens) public {
         uint256 expectedTotal = mockERC721.computeTotalReward(numTokens);
 
-        (uint256 creatorReward, uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) = mockERC721
+        RewardsSettings memory settings = mockERC721
             .computeFreeMintRewards(numTokens);
 
-        uint256 actualTotal = creatorReward + mintReferralReward + createReferralReward + firstMinterReward + zoraReward;
+        uint256 actualTotal = settings.creatorReward + settings.mintReferralReward + settings.createReferralReward + settings.firstMinterReward + settings.zoraReward;
 
         assertEq(expectedTotal, actualTotal);
     }
@@ -28,11 +29,11 @@ contract ERC721RewardsTest is ProtocolRewardsTest {
     function testValidatePaidMintTotalComputation(uint32 numTokens) public {
         uint256 expectedTotal = mockERC721.computeTotalReward(numTokens);
 
-        (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) = mockERC721.computePaidMintRewards(
+        RewardsSettings memory settings = mockERC721.computePaidMintRewards(
             numTokens
         );
 
-        uint256 actualTotal = mintReferralReward + createReferralReward + firstMinterReward + zoraReward;
+        uint256 actualTotal = settings.mintReferralReward + settings.createReferralReward + settings.firstMinterReward + settings.zoraReward;
 
         assertEq(expectedTotal, actualTotal);
     }
@@ -47,14 +48,14 @@ contract ERC721RewardsTest is ProtocolRewardsTest {
         vm.prank(collector);
         mockERC721.mintWithRewards{value: totalReward}(collector, numTokens, mintReferral);
 
-        (uint256 creatorReward, uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) = mockERC721
+        RewardsSettings memory settings = mockERC721
             .computeFreeMintRewards(numTokens);
 
         assertEq(protocolRewards.totalSupply(), totalReward);
-        assertEq(protocolRewards.balanceOf(creator), creatorReward + firstMinterReward);
-        assertEq(protocolRewards.balanceOf(mintReferral), mintReferralReward);
-        assertEq(protocolRewards.balanceOf(createReferral), createReferralReward);
-        assertEq(protocolRewards.balanceOf(zora), zoraReward);
+        assertEq(protocolRewards.balanceOf(creator), settings.creatorReward + settings.firstMinterReward);
+        assertEq(protocolRewards.balanceOf(mintReferral), settings.mintReferralReward);
+        assertEq(protocolRewards.balanceOf(createReferral), settings.createReferralReward);
+        assertEq(protocolRewards.balanceOf(zora), settings.zoraReward);
     }
 
     function test721PaidMintDeposit(uint16 numTokens, uint256 pricePerToken) public {
@@ -72,15 +73,15 @@ contract ERC721RewardsTest is ProtocolRewardsTest {
         vm.prank(collector);
         mockERC721.mintWithRewards{value: totalValue}(collector, numTokens, mintReferral);
 
-        (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) = mockERC721.computePaidMintRewards(
+        RewardsSettings memory settings = mockERC721.computePaidMintRewards(
             numTokens
         );
 
         assertEq(protocolRewards.totalSupply(), totalReward);
-        assertEq(protocolRewards.balanceOf(creator), firstMinterReward);
-        assertEq(protocolRewards.balanceOf(mintReferral), mintReferralReward);
-        assertEq(protocolRewards.balanceOf(createReferral), createReferralReward);
-        assertEq(protocolRewards.balanceOf(zora), zoraReward);
+        assertEq(protocolRewards.balanceOf(creator), settings.firstMinterReward);
+        assertEq(protocolRewards.balanceOf(mintReferral), settings.mintReferralReward);
+        assertEq(protocolRewards.balanceOf(createReferral), settings.createReferralReward);
+        assertEq(protocolRewards.balanceOf(zora), settings.zoraReward);
     }
 
     function test721FreeMintNullReferralRecipients(uint16 numTokens) public {
@@ -95,12 +96,12 @@ contract ERC721RewardsTest is ProtocolRewardsTest {
         vm.prank(collector);
         mockERC721.mintWithRewards{value: totalReward}(collector, numTokens, address(0));
 
-        (uint256 creatorReward, uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) = mockERC721
+        RewardsSettings memory settings = mockERC721
             .computeFreeMintRewards(numTokens);
 
         assertEq(protocolRewards.totalSupply(), totalReward);
-        assertEq(protocolRewards.balanceOf(creator), creatorReward + firstMinterReward);
-        assertEq(protocolRewards.balanceOf(zora), zoraReward + mintReferralReward + createReferralReward);
+        assertEq(protocolRewards.balanceOf(creator), settings.creatorReward + settings.firstMinterReward);
+        assertEq(protocolRewards.balanceOf(zora), settings.zoraReward + settings.mintReferralReward + settings.createReferralReward);
     }
 
     function test721PaidMintNullReferralRecipient(uint16 numTokens, uint256 pricePerToken) public {
@@ -120,13 +121,13 @@ contract ERC721RewardsTest is ProtocolRewardsTest {
         vm.prank(collector);
         mockERC721.mintWithRewards{value: totalValue}(collector, numTokens, address(0));
 
-        (uint256 mintReferralReward, uint256 createReferralReward, uint256 firstMinterReward, uint256 zoraReward) = mockERC721.computePaidMintRewards(
+       RewardsSettings memory settings =  mockERC721.computePaidMintRewards(
             numTokens
         );
 
         assertEq(protocolRewards.totalSupply(), totalReward);
-        assertEq(protocolRewards.balanceOf(creator), firstMinterReward);
-        assertEq(protocolRewards.balanceOf(zora), zoraReward + mintReferralReward + createReferralReward);
+        assertEq(protocolRewards.balanceOf(creator), settings.firstMinterReward);
+        assertEq(protocolRewards.balanceOf(zora), settings.zoraReward + settings.mintReferralReward + settings.createReferralReward);
     }
 
     function testRevert721CreatorFundsRecipientNotSet(uint16 numTokens) public {
