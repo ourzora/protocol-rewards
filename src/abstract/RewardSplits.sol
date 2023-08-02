@@ -5,12 +5,13 @@ import {IProtocolRewards} from "../interfaces/IProtocolRewards.sol";
 
 struct RewardsSettings {
     uint256 creatorReward;
-    uint256 mintReferralReward;
     uint256 createReferralReward;
+    uint256 mintReferralReward;
     uint256 firstMinterReward;
     uint256 zoraReward;
 }
 
+/// @notice Common logic for between Zora ERC-721 & ERC-1155 contracts for protocol reward splits & deposits
 abstract contract RewardSplits {
     error CREATOR_FUNDS_RECIPIENT_NOT_SET();
     error INVALID_ADDRESS_ZERO();
@@ -50,8 +51,8 @@ abstract contract RewardSplits {
         return
             RewardsSettings({
                 creatorReward: numTokens * CREATOR_REWARD,
-                mintReferralReward: numTokens * MINT_REFERRAL_FREE_MINT_REWARD,
                 createReferralReward: numTokens * CREATE_REFERRAL_FREE_MINT_REWARD,
+                mintReferralReward: numTokens * MINT_REFERRAL_FREE_MINT_REWARD,
                 firstMinterReward: numTokens * FIRST_MINTER_REWARD,
                 zoraReward: numTokens * ZORA_FREE_MINT_REWARD
             });
@@ -61,31 +62,31 @@ abstract contract RewardSplits {
         return
             RewardsSettings({
                 creatorReward: 0,
-                mintReferralReward: numTokens * MINT_REFERRAL_PAID_MINT_REWARD,
                 createReferralReward: numTokens * CREATE_REFERRAL_PAID_MINT_REWARD,
+                mintReferralReward: numTokens * MINT_REFERRAL_PAID_MINT_REWARD,
                 firstMinterReward: numTokens * FIRST_MINTER_REWARD,
                 zoraReward: numTokens * ZORA_PAID_MINT_REWARD
             });
     }
 
-    function _depositFreeMintRewards(uint256 totalReward, uint256 numTokens, address creator, address mintReferral, address createReferral) internal {
+    function _depositFreeMintRewards(uint256 totalReward, uint256 numTokens, address creator, address createReferral, address mintReferral) internal {
         RewardsSettings memory settings = computeFreeMintRewards(numTokens);
-
-        if (mintReferral == address(0)) {
-            mintReferral = zoraRewardRecipient;
-        }
 
         if (createReferral == address(0)) {
             createReferral = zoraRewardRecipient;
         }
 
+        if (mintReferral == address(0)) {
+            mintReferral = zoraRewardRecipient;
+        }
+
         protocolRewards.depositRewards{value: totalReward}(
             creator,
             settings.creatorReward,
-            mintReferral,
-            settings.mintReferralReward,
             createReferral,
             settings.createReferralReward,
+            mintReferral,
+            settings.mintReferralReward,
             creator,
             settings.firstMinterReward,
             zoraRewardRecipient,
@@ -93,24 +94,24 @@ abstract contract RewardSplits {
         );
     }
 
-    function _depositPaidMintRewards(uint256 totalReward, uint256 numTokens, address creator, address mintReferral, address createReferral) internal {
+    function _depositPaidMintRewards(uint256 totalReward, uint256 numTokens, address creator, address createReferral, address mintReferral) internal {
         RewardsSettings memory settings = computePaidMintRewards(numTokens);
-
-        if (mintReferral == address(0)) {
-            mintReferral = zoraRewardRecipient;
-        }
 
         if (createReferral == address(0)) {
             createReferral = zoraRewardRecipient;
         }
 
+        if (mintReferral == address(0)) {
+            mintReferral = zoraRewardRecipient;
+        }
+
         protocolRewards.depositRewards{value: totalReward}(
             address(0),
             0,
-            mintReferral,
-            settings.mintReferralReward,
             createReferral,
             settings.createReferralReward,
+            mintReferral,
+            settings.mintReferralReward,
             creator,
             settings.firstMinterReward,
             zoraRewardRecipient,

@@ -4,18 +4,26 @@ pragma solidity 0.8.17;
 import {EIP712} from "./lib/EIP712.sol";
 import {IProtocolRewards} from "./interfaces/IProtocolRewards.sol";
 
+/// @title ProtocolRewards
+/// @notice Manager of ETH deposits & withdrawals for protocol rewards
 contract ProtocolRewards is IProtocolRewards, EIP712 {
+    /// @notice The EIP-712 typehash for gasless withdraws
     bytes32 public constant WITHDRAW_TYPEHASH = keccak256("Withdraw(address from,address to,uint256 amount,uint256 nonce,uint256 deadline)");
 
+    /// @notice An account's protocol rewards balance
     mapping(address => uint256) public balanceOf;
+
+    /// @notice An account's nonce for gasless withdraws
     mapping(address => uint256) public nonces;
 
     constructor() payable EIP712("ProtocolRewards", "1") {}
 
+    /// @notice The total amount of ETH held in the contract
     function totalSupply() external view returns (uint256) {
         return address(this).balance;
     }
 
+    /// @notice Generic function to deposit ETH for a recipient, with an optional comment
     function deposit(address to, string calldata comment) external payable {
         if (to == address(0)) {
             revert ADDRESS_ZERO();
@@ -28,6 +36,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
         emit Deposit(msg.sender, to, msg.value, comment);
     }
 
+    /// @notice Generic function to deposit ETH for multiple recipients, with an optional comment
     function depositBatch(address[] calldata recipients, uint256[] calldata amounts, string calldata comment) external payable {
         uint256 numRecipients = recipients.length;
 
@@ -72,19 +81,20 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
         }
     }
 
+    /// @notice Used by Zora ERC-721 & ERC-1155 contracts to deposit protocol rewards
     function depositRewards(
         address creator,
         uint256 creatorReward,
-        address mintReferral,
-        uint256 mintReferralReward,
         address createReferral,
         uint256 createReferralReward,
+        address mintReferral,
+        uint256 mintReferralReward,
         address firstMinter,
         uint256 firstMinterReward,
         address zora,
         uint256 zoraReward
     ) external payable {
-        if (msg.value != (creatorReward + mintReferralReward + createReferralReward + firstMinterReward + zoraReward)) {
+        if (msg.value != (creatorReward + createReferralReward + mintReferralReward + firstMinterReward + zoraReward)) {
             revert INVALID_DEPOSIT();
         }
 
@@ -92,11 +102,11 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
             if (creator != address(0)) {
                 balanceOf[creator] += creatorReward;
             }
-            if (mintReferral != address(0)) {
-                balanceOf[mintReferral] += mintReferralReward;
-            }
             if (createReferral != address(0)) {
                 balanceOf[createReferral] += createReferralReward;
+            }
+            if (mintReferral != address(0)) {
+                balanceOf[mintReferral] += mintReferralReward;
             }
             if (firstMinter != address(0)) {
                 balanceOf[firstMinter] += firstMinterReward;
@@ -121,6 +131,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
         );
     }
 
+    /// @notice Withdraw protocol rewards
     function withdraw(address to, uint256 amount) external {
         address owner = msg.sender;
 
@@ -139,6 +150,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
         }
     }
 
+    /// @notice Execute a withdraw of protocol rewards via signature
     function withdrawWithSig(address from, address to, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external {
         if (block.timestamp > deadline) {
             revert SIGNATURE_DEADLINE_EXPIRED();

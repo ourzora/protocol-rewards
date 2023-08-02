@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
+/// @title IProtocolRewards
+/// @notice The interface for deposits & withdrawals of protocol rewards
 interface IProtocolRewards {
     event RewardsDeposit(
         address indexed creator,
@@ -26,22 +28,22 @@ interface IProtocolRewards {
     error SIGNATURE_DEADLINE_EXPIRED();
     error TRANSFER_FAILED();
 
+    function deposit(address to, string calldata comment) external payable;
+
+    function depositBatch(address[] calldata recipients, uint256[] calldata amounts, string calldata comment) external payable;
+
     function depositRewards(
         address creator,
         uint256 creatorReward,
-        address mintReferral,
-        uint256 mintReferralReward,
         address createReferral,
         uint256 createReferralReward,
+        address mintReferral,
+        uint256 mintReferralReward,
         address firstMinter,
         uint256 firstMinterReward,
         address zora,
         uint256 zoraReward
     ) external payable;
-
-    function deposit(address to, string calldata comment) external payable;
-
-    function depositBatch(address[] calldata recipients, uint256[] calldata amounts, string calldata comment) external payable;
 
     function withdraw(address to, uint256 amount) external;
 

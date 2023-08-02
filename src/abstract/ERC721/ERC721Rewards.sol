@@ -3,14 +3,12 @@ pragma solidity 0.8.17;
 
 import {RewardSplits} from "../RewardSplits.sol";
 
+/// @notice The base logic for handling Zora ERC-721 protocol rewards
+/// @dev Used in https://github.com/ourzora/zora-drops-contracts/blob/main/src/ERC721Drop.sol
 abstract contract ERC721Rewards is RewardSplits {
     constructor(address _protocolRewards, address _zoraRewardRecipient) payable RewardSplits(_protocolRewards, _zoraRewardRecipient) {}
 
-    function _handleRewards(uint256 msgValue, uint256 numTokens, uint256 salePrice, address creator, address mintReferral, address createReferral) internal {
-        if (creator == address(0)) {
-            revert CREATOR_FUNDS_RECIPIENT_NOT_SET();
-        }
-
+    function _handleRewards(uint256 msgValue, uint256 numTokens, uint256 salePrice, address creator, address createReferral, address mintReferral) internal {
         uint256 totalReward = computeTotalReward(numTokens);
 
         if (salePrice == 0) {
@@ -18,7 +16,7 @@ abstract contract ERC721Rewards is RewardSplits {
                 revert INVALID_ETH_AMOUNT();
             }
 
-            _depositFreeMintRewards(totalReward, numTokens, creator, mintReferral, createReferral);
+            _depositFreeMintRewards(totalReward, numTokens, creator, createReferral, mintReferral);
         } else {
             uint256 totalSale = numTokens * salePrice;
 
@@ -26,7 +24,7 @@ abstract contract ERC721Rewards is RewardSplits {
                 revert INVALID_ETH_AMOUNT();
             }
 
-            _depositPaidMintRewards(totalReward, numTokens, creator, mintReferral, createReferral);
+            _depositPaidMintRewards(totalReward, numTokens, creator, createReferral, mintReferral);
         }
     }
 }
