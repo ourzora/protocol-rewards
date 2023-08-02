@@ -5,12 +5,12 @@ import {EIP712} from "./lib/EIP712.sol";
 import {IProtocolRewards} from "./interfaces/IProtocolRewards.sol";
 
 /// @title ProtocolRewards
-/// @notice Manager of ETH deposits & withdrawals for protocol rewards
+/// @notice Manager of deposits & withdrawals for protocol rewards
 contract ProtocolRewards is IProtocolRewards, EIP712 {
     /// @notice The EIP-712 typehash for gasless withdraws
     bytes32 public constant WITHDRAW_TYPEHASH = keccak256("Withdraw(address from,address to,uint256 amount,uint256 nonce,uint256 deadline)");
 
-    /// @notice An account's protocol rewards balance
+    /// @notice An account's balance
     mapping(address => uint256) public balanceOf;
 
     /// @notice An account's nonce for gasless withdraws
