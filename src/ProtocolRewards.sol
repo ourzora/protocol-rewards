@@ -5,7 +5,7 @@ import {EIP712} from "./lib/EIP712.sol";
 import {IProtocolRewards} from "./interfaces/IProtocolRewards.sol";
 
 contract ProtocolRewards is IProtocolRewards, EIP712 {
-    bytes32 public constant WITHDRAW_TYPEHASH = keccak256("Withdraw(address owner,uint256 amount,uint256 nonce,uint256 deadline)");
+    bytes32 public constant WITHDRAW_TYPEHASH = keccak256("Withdraw(address from,address to,uint256 amount,uint256 nonce,uint256 deadline)");
 
     mapping(address => uint256) public balanceOf;
     mapping(address => uint256) public nonces;
@@ -16,14 +16,16 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
         return address(this).balance;
     }
 
-    function deposit(address recipient, string calldata comment) external payable {
-        if (recipient == address(0)) {
+    function deposit(address to, string calldata comment) external payable {
+        if (to == address(0)) {
             revert ADDRESS_ZERO();
         }
 
-        balanceOf[recipient] += msg.value;
+        unchecked {
+            balanceOf[to] += msg.value;
+        }
 
-        emit Deposit(msg.sender, recipient, msg.value, comment);
+        emit Deposit(msg.sender, to, msg.value, comment);
     }
 
     function depositBatch(address[] calldata recipients, uint256[] calldata amounts, string calldata comment) external payable {
@@ -58,7 +60,9 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
                 revert ADDRESS_ZERO();
             }
 
-            balanceOf[currentRecipient] += currentAmount;
+            unchecked {
+                balanceOf[currentRecipient] += currentAmount;
+            }
 
             emit Deposit(msg.sender, currentRecipient, currentAmount, comment);
 
@@ -103,21 +107,21 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
         }
 
         emit RewardsDeposit(
-            msg.sender,
             creator,
-            creatorReward,
-            mintReferral,
-            mintReferralReward,
             createReferral,
-            createReferralReward,
+            mintReferral,
             firstMinter,
-            firstMinterReward,
             zora,
+            msg.sender,
+            creatorReward,
+            createReferralReward,
+            mintReferralReward,
+            firstMinterReward,
             zoraReward
         );
     }
 
-    function withdraw(uint256 amount) external {
+    function withdraw(address to, uint256 amount) external {
         address owner = msg.sender;
 
         if (amount > balanceOf[owner]) {
@@ -126,16 +130,16 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
 
         balanceOf[owner] -= amount;
 
-        emit Withdraw(owner, amount);
+        emit Withdraw(owner, to, amount);
 
-        (bool success, ) = owner.call{value: amount}("");
+        (bool success, ) = to.call{value: amount}("");
 
         if (!success) {
             revert TRANSFER_FAILED();
         }
     }
 
-    function withdrawWithSig(address owner, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external {
+    function withdrawWithSig(address from, address to, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external {
         if (block.timestamp > deadline) {
             revert SIGNATURE_DEADLINE_EXPIRED();
         }
@@ -143,27 +147,26 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
         bytes32 withdrawHash;
 
         unchecked {
-            withdrawHash = keccak256(abi.encode(WITHDRAW_TYPEHASH, owner, amount, nonces[owner]++, deadline));
+            withdrawHash = keccak256(abi.encode(WITHDRAW_TYPEHASH, from, to, amount, nonces[from]++, deadline));
         }
-        
 
         bytes32 digest = _hashTypedDataV4(withdrawHash);
 
         address recoveredAddress = ecrecover(digest, v, r, s);
 
-        if (recoveredAddress == address(0) || recoveredAddress != owner) {
+        if (recoveredAddress == address(0) || recoveredAddress != from) {
             revert INVALID_SIGNATURE();
         }
 
-        if (amount > balanceOf[owner]) {
+        if (amount > balanceOf[from]) {
             revert INVALID_WITHDRAW();
         }
 
-        balanceOf[owner] -= amount;
+        balanceOf[from] -= amount;
 
-        emit Withdraw(owner, amount);
+        emit Withdraw(from, to, amount);
 
-        (bool success, ) = owner.call{value: amount}("");
+        (bool success, ) = to.call{value: amount}("");
 
         if (!success) {
             revert TRANSFER_FAILED();
