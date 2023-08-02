@@ -24,19 +24,22 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
     }
 
     /// @notice Generic function to deposit ETH for a recipient, with an optional comment
+    /// @param to Address to deposit to
+    /// @param comment Optional comment as reason for deposit
     function deposit(address to, string calldata comment) external payable {
         if (to == address(0)) {
             revert ADDRESS_ZERO();
         }
 
-        unchecked {
-            balanceOf[to] += msg.value;
-        }
+        balanceOf[to] += msg.value;
 
         emit Deposit(msg.sender, to, msg.value, comment);
     }
 
     /// @notice Generic function to deposit ETH for multiple recipients, with an optional comment
+    /// @param recipients recipients to send the amount to, array aligns with amounts
+    /// @param amounts amounts to send to each recipient, array aligns with recipients
+    /// @param comment Optional comment to include with mint
     function depositBatch(address[] calldata recipients, uint256[] calldata amounts, string calldata comment) external payable {
         uint256 numRecipients = recipients.length;
 
@@ -69,9 +72,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
                 revert ADDRESS_ZERO();
             }
 
-            unchecked {
-                balanceOf[currentRecipient] += currentAmount;
-            }
+            balanceOf[currentRecipient] += currentAmount;
 
             emit Deposit(msg.sender, currentRecipient, currentAmount, comment);
 
@@ -82,6 +83,16 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
     }
 
     /// @notice Used by Zora ERC-721 & ERC-1155 contracts to deposit protocol rewards
+    /// @param creator Creator for NFT rewards
+    /// @param creatorReward Creator reward amount
+    /// @param createReferral Creator referral
+    /// @param createReferralReward Creator referral reward
+    /// @param mintReferral Mint referral user
+    /// @param mintReferralReward Mint referral amount
+    /// @param firstMinter First minter reward
+    /// @param firstMinterReward First minter reward amount
+    /// @param zora ZORA recipient
+    /// @param zoraReward ZORA amount
     function depositRewards(
         address creator,
         uint256 creatorReward,
@@ -132,6 +143,8 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
     }
 
     /// @notice Withdraw protocol rewards
+    /// @param to Withdraws from msg.sender to this address
+    /// @param amount amount to withdraw
     function withdraw(address to, uint256 amount) external {
         address owner = msg.sender;
 
@@ -151,6 +164,13 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
     }
 
     /// @notice Execute a withdraw of protocol rewards via signature
+    /// @param from Withdraw from this address
+    /// @param to Withdraw to this address
+    /// @param amount Amount to withdraw
+    /// @param deadline Deadline for the signature to be valid
+    /// @param v V component of signature
+    /// @param r R component of signature
+    /// @param s S component of signature
     function withdrawWithSig(address from, address to, uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external {
         if (block.timestamp > deadline) {
             revert SIGNATURE_DEADLINE_EXPIRED();
