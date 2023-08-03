@@ -102,7 +102,6 @@ interface IProtocolRewards {
         uint256 zoraReward
     ) external payable;
 
-
     /// @notice Withdraw protocol rewards
     /// @param to Withdraws from msg.sender to this address
     /// @param amount amount to withdraw
