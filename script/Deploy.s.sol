@@ -8,7 +8,6 @@ import {console2} from "forge-std/console2.sol";
 import {ProtocolRewards} from "../src/ProtocolRewards.sol";
 
 contract DeployScript is ScriptBase {
-
     function run() public {
         vm.startBroadcast(deployer);
 
@@ -24,10 +23,10 @@ contract DeployScript is ScriptBase {
         console2.logBytes32(creationCodeHash);
 
         // Assert to ensure bytecode has not changed
-        assert (bytes32(0x55a411dda88b4f914a7ff1734681ea86b6c1438c7f9506e02ad6f687861564bb) == creationCodeHash);
+        assert(bytes32(0x55a411dda88b4f914a7ff1734681ea86b6c1438c7f9506e02ad6f687861564bb) == creationCodeHash);
 
         // Sanity check for address
-        assert (IMMUTABLE_CREATE2_FACTORY.findCreate2Address(salt, creationCode) == address(0x77777777d5141a9F017CA8F2A42A0e6925bee18A));
+        assert(IMMUTABLE_CREATE2_FACTORY.findCreate2Address(salt, creationCode) == address(0x77777777d5141a9F017CA8F2A42A0e6925bee18A));
 
         address result = IMMUTABLE_CREATE2_FACTORY.safeCreate2(salt, creationCode);
 
