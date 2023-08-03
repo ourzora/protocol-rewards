@@ -16,7 +16,7 @@ contract DepositTest is ProtocolRewardsTest {
         vm.deal(collector, amount);
 
         vm.prank(collector);
-        protocolRewards.deposit{value: amount}(to, "test");
+        protocolRewards.deposit{value: amount}(to, bytes4(0), "test");
 
         assertEq(protocolRewards.balanceOf(to), amount);
     }
@@ -28,12 +28,13 @@ contract DepositTest is ProtocolRewardsTest {
 
         vm.prank(collector);
         vm.expectRevert(abi.encodeWithSignature("ADDRESS_ZERO()"));
-        protocolRewards.deposit{value: amount}(address(0), "test");
+        protocolRewards.deposit{value: amount}(address(0), bytes4(0), "test");
     }
 
     function testDepositBatch(uint8 numRecipients) public {
         address[] memory recipients = new address[](numRecipients);
         uint256[] memory amounts = new uint256[](numRecipients);
+        bytes4[] memory reasons = new bytes4[](numRecipients);
 
         uint256 totalValue;
 
@@ -46,7 +47,7 @@ contract DepositTest is ProtocolRewardsTest {
 
         vm.deal(collector, totalValue);
         vm.prank(collector);
-        protocolRewards.depositBatch{value: totalValue}(recipients, amounts, "test");
+        protocolRewards.depositBatch{value: totalValue}(recipients, amounts, reasons, "test");
 
         for (uint256 i; i < numRecipients; ++i) {
             assertEq(protocolRewards.balanceOf(recipients[i]), amounts[i]);
@@ -58,6 +59,7 @@ contract DepositTest is ProtocolRewardsTest {
 
         address[] memory recipients = new address[](numRecipients);
         uint256[] memory amounts = new uint256[](numAmounts);
+        bytes4[] memory reasons = new bytes4[](numAmounts);
 
         uint256 totalValue;
 
@@ -75,7 +77,7 @@ contract DepositTest is ProtocolRewardsTest {
 
         vm.prank(collector);
         vm.expectRevert(abi.encodeWithSignature("ARRAY_LENGTH_MISMATCH()"));
-        protocolRewards.depositBatch{value: totalValue}(recipients, amounts, "test");
+        protocolRewards.depositBatch{value: totalValue}(recipients, amounts, reasons, "test");
     }
 
     function testRevert_InvalidDepositMsgValue(uint8 numRecipients) public {
@@ -83,6 +85,7 @@ contract DepositTest is ProtocolRewardsTest {
 
         address[] memory recipients = new address[](numRecipients);
         uint256[] memory amounts = new uint256[](numRecipients);
+        bytes4[] memory reasons = new bytes4[](numRecipients);
 
         uint256 totalValue;
 
@@ -97,7 +100,7 @@ contract DepositTest is ProtocolRewardsTest {
 
         vm.prank(collector);
         vm.expectRevert(abi.encodeWithSignature("INVALID_DEPOSIT()"));
-        protocolRewards.depositBatch{value: 0}(recipients, amounts, "test");
+        protocolRewards.depositBatch{value: 0}(recipients, amounts, reasons, "test");
     }
 
     function testRevert_RecipientCannotBeAddressZero(uint8 numRecipients) public {
@@ -105,6 +108,7 @@ contract DepositTest is ProtocolRewardsTest {
 
         address[] memory recipients = new address[](numRecipients);
         uint256[] memory amounts = new uint256[](numRecipients);
+        bytes4[] memory reasons = new bytes4[](numRecipients);
 
         uint256 totalValue;
 
@@ -121,6 +125,6 @@ contract DepositTest is ProtocolRewardsTest {
 
         vm.prank(collector);
         vm.expectRevert(abi.encodeWithSignature("ADDRESS_ZERO()"));
-        protocolRewards.depositBatch{value: totalValue}(recipients, amounts, "test");
+        protocolRewards.depositBatch{value: totalValue}(recipients, amounts, reasons, "test");
     }
 }

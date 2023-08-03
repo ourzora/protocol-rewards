@@ -2,7 +2,7 @@
 auto_detect_solc = true
 fs_permissions = [{access = "read", path = "./addresses"}, {access = "read", path = "./package.json"}]
 fuzz_runs = 500
-libs = ['lib']
+libs = ['lib', '_imagine']
 optimizer = true
 optimizer_runs = 500000
 out = 'out'
