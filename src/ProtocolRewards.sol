@@ -25,25 +25,27 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
 
     /// @notice Generic function to deposit ETH for a recipient, with an optional comment
     /// @param to Address to deposit to
+    /// @param to Reason system reason for deposit (used for indexing)
     /// @param comment Optional comment as reason for deposit
-    function deposit(address to, string calldata comment) external payable {
+    function deposit(address to, bytes4 reason, string calldata comment) external payable {
         if (to == address(0)) {
             revert ADDRESS_ZERO();
         }
 
         balanceOf[to] += msg.value;
 
-        emit Deposit(msg.sender, to, msg.value, comment);
+        emit Deposit(msg.sender, to, reason, msg.value, comment);
     }
 
     /// @notice Generic function to deposit ETH for multiple recipients, with an optional comment
     /// @param recipients recipients to send the amount to, array aligns with amounts
     /// @param amounts amounts to send to each recipient, array aligns with recipients
+    /// @param reasons optional bytes4 hash for indexing
     /// @param comment Optional comment to include with mint
-    function depositBatch(address[] calldata recipients, uint256[] calldata amounts, string calldata comment) external payable {
+    function depositBatch(address[] calldata recipients, uint256[] calldata amounts, bytes4[] calldata reasons, string calldata comment) external payable {
         uint256 numRecipients = recipients.length;
 
-        if (numRecipients != amounts.length) {
+        if (numRecipients != amounts.length || numRecipients != reasons.length) {
             revert ARRAY_LENGTH_MISMATCH();
         }
 
@@ -74,7 +76,7 @@ contract ProtocolRewards is IProtocolRewards, EIP712 {
 
             balanceOf[currentRecipient] += currentAmount;
 
-            emit Deposit(msg.sender, currentRecipient, currentAmount, comment);
+            emit Deposit(msg.sender, currentRecipient, reasons[i], currentAmount, comment);
 
             unchecked {
                 ++i;
