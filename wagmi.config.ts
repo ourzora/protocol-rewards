@@ -6,10 +6,16 @@ export default defineConfig({
     {
       name: 'ProtocolRewards',
       address: {
-        5: '0xD70de31dA9B9FD35aCa0D299f2850b4077024310',
-        420: '0x8237F421357F87a23ed0CFf3a5586172F210A21B',
-        999: '0x39Bcc1e15b8ec15684F17fEf298151F4A544B591',
-        84531: '0xF62b0d56BA617F803DF1C464C519FF7D29451B2f',
+        7777777: '0x7777777A456fF23D9b6851184472c08FBDa73e32',
+        999: '0x7777777A456fF23D9b6851184472c08FBDa73e32',
+        1: '0x7777777A456fF23D9b6851184472c08FBDa73e32',
+        5: '0x7777777A456fF23D9b6851184472c08FBDa73e32',
+        10: '0x7777777A456fF23D9b6851184472c08FBDa73e32',
+        420: '0x7777777A456fF23D9b6851184472c08FBDa73e32',
+        8453: '0x7777777A456fF23D9b6851184472c08FBDa73e32',
+        84531: '0x7777777A456fF23D9b6851184472c08FBDa73e32',
+        424: '0x7777777A456fF23D9b6851184472c08FBDa73e32',
+        58008: '0x7777777A456fF23D9b6851184472c08FBDa73e32',
       },
       abi: [
         {
@@ -82,6 +88,12 @@ export default defineConfig({
               "internalType": "address",
               "name": "to",
               "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes4",
+              "name": "reason",
+              "type": "bytes4"
             },
             {
               "indexed": false,
@@ -243,6 +255,11 @@ export default defineConfig({
               "type": "address"
             },
             {
+              "internalType": "bytes4",
+              "name": "reason",
+              "type": "bytes4"
+            },
+            {
               "internalType": "string",
               "name": "comment",
               "type": "string"
@@ -264,6 +281,11 @@ export default defineConfig({
               "internalType": "uint256[]",
               "name": "amounts",
               "type": "uint256[]"
+            },
+            {
+              "internalType": "bytes4[]",
+              "name": "reasons",
+              "type": "bytes4[]"
             },
             {
               "internalType": "string",
