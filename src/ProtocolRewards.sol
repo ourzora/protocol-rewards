@@ -7,7 +7,7 @@ import {IProtocolRewards} from "./interfaces/IProtocolRewards.sol";
 
 /// @title ProtocolRewards
 /// @notice Manager of deposits & withdrawals for protocol rewards
-contract ProtocolRewards is IProtocolRewards, EIP712 {
+contract ProtocolRewards is Enjoy, IProtocolRewards, EIP712 {
     /// @notice The EIP-712 typehash for gasless withdraws
     bytes32 public constant WITHDRAW_TYPEHASH = keccak256("Withdraw(address from,address to,uint256 amount,uint256 nonce,uint256 deadline)");
 
