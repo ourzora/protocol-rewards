@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
+import {Enjoy} from "../_imagine/Enjoy.sol";
 import {EIP712} from "./lib/EIP712.sol";
 import {IProtocolRewards} from "./interfaces/IProtocolRewards.sol";
 
