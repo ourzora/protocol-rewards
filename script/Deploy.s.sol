@@ -15,18 +15,17 @@ contract DeployScript is ScriptBase {
 
         bytes memory creationCode = type(ProtocolRewards).creationCode;
 
-        bytes32 salt = bytes32(0x0000000000000000000000000000000000000000849829cbf6881b00e4855576);
-        // expected address: 0x77777770Ab38441aDA292bB340BBd6502e8E5808
+        bytes32 salt = bytes32(0x0000000000000000000000000000000000000000fb7140769db7a400af50b6d6);
 
         console2.log("creation code hash");
         bytes32 creationCodeHash = keccak256(creationCode);
         console2.logBytes32(creationCodeHash);
 
         // Assert to ensure bytecode has not changed
-        assert(bytes32(0x55a411dda88b4f914a7ff1734681ea86b6c1438c7f9506e02ad6f687861564bb) == creationCodeHash);
+        assert(bytes32(0x8a7c66f57af581632f3382bbedad1947c9d00b95709daefeb2b64a913f9c0f52) == creationCodeHash);
 
         // Sanity check for address
-        assert(IMMUTABLE_CREATE2_FACTORY.findCreate2Address(salt, creationCode) == address(0x77777777d5141a9F017CA8F2A42A0e6925bee18A));
+        assert(IMMUTABLE_CREATE2_FACTORY.findCreate2Address(salt, creationCode) == address(0x7777777A456fF23D9b6851184472c08FBDa73e32));
 
         address result = IMMUTABLE_CREATE2_FACTORY.safeCreate2(salt, creationCode);
 
