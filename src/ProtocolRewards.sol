@@ -149,6 +149,10 @@ contract ProtocolRewards is Enjoy, IProtocolRewards, EIP712 {
     /// @param to Withdraws from msg.sender to this address
     /// @param amount amount to withdraw
     function withdraw(address to, uint256 amount) external {
+        if (to == address(0)) {
+            revert ADDRESS_ZERO();
+        }
+
         address owner = msg.sender;
 
         if (amount > balanceOf[owner]) {
@@ -158,6 +162,29 @@ contract ProtocolRewards is Enjoy, IProtocolRewards, EIP712 {
         balanceOf[owner] -= amount;
 
         emit Withdraw(owner, to, amount);
+
+        (bool success, ) = to.call{value: amount}("");
+
+        if (!success) {
+            revert TRANSFER_FAILED();
+        }
+    }
+
+    /// @notice Withdraw rewards on behalf of an address
+    /// @param to The address to withdraw for
+    /// @param amount The amount to withdraw
+    function withdrawFor(address to, uint256 amount) external {
+        if (to == address(0)) {
+            revert ADDRESS_ZERO();
+        }
+
+        if (amount > balanceOf[to]) {
+            revert INVALID_WITHDRAW();
+        }
+
+        balanceOf[to] -= amount;
+
+        emit Withdraw(to, to, amount);
 
         (bool success, ) = to.call{value: amount}("");
 
@@ -191,6 +218,10 @@ contract ProtocolRewards is Enjoy, IProtocolRewards, EIP712 {
 
         if (recoveredAddress == address(0) || recoveredAddress != from) {
             revert INVALID_SIGNATURE();
+        }
+
+        if (to == address(0)) {
+            revert ADDRESS_ZERO();
         }
 
         if (amount > balanceOf[from]) {
