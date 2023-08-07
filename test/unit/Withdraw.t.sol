@@ -139,7 +139,7 @@ contract WithdrawTest is ProtocolRewardsTest {
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(creatorPrivateKey, digest);
 
         vm.expectRevert(abi.encodeWithSignature("ADDRESS_ZERO()"));
-        protocolRewards.withdrawWithSig(creator, address(0), creatorRewardsBalance, deadline, v, r, s);        
+        protocolRewards.withdrawWithSig(creator, address(0), creatorRewardsBalance, deadline, v, r, s);
     }
 
     function testRevert_InvalidNonce() public {
