@@ -166,6 +166,29 @@ contract ProtocolRewards is Enjoy, IProtocolRewards, EIP712 {
         }
     }
 
+    /// @notice Withdraw rewards on behalf of an address
+    /// @param to The address to withdraw for
+    /// @param amount The amount to withdraw
+    function withdrawFor(address to, uint256 amount) external {
+        if (to == address(0)) {
+            revert ADDRESS_ZERO();
+        }
+
+        if (amount > balanceOf[to]) {
+            revert INVALID_WITHDRAW();
+        }
+
+        balanceOf[to] -= amount;
+
+        emit Withdraw(to, to, amount);
+
+        (bool success, ) = to.call{value: amount}("");
+
+        if (!success) {
+            revert TRANSFER_FAILED();
+        }
+    }
+
     /// @notice Execute a withdraw of protocol rewards via signature
     /// @param from Withdraw from this address
     /// @param to Withdraw to this address
