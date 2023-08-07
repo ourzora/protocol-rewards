@@ -152,7 +152,7 @@ contract ProtocolRewards is Enjoy, IProtocolRewards, EIP712 {
         if (to == address(0)) {
             revert ADDRESS_ZERO();
         }
-        
+
         address owner = msg.sender;
 
         if (amount > balanceOf[owner]) {
