@@ -40,6 +40,19 @@ contract WithdrawTest is ProtocolRewardsTest {
         assertEq(protocolRewards.totalSupply(), beforeTotalSupply - creatorRewardsBalance);
     }
 
+    function testWithdrawFullBalance() public {
+        uint256 beforeCreatorBalance = creator.balance;
+        uint256 beforeTotalSupply = protocolRewards.totalSupply();
+
+        uint256 creatorRewardsBalance = protocolRewards.balanceOf(creator);
+
+        vm.prank(creator);
+        protocolRewards.withdraw(creator, 0);
+
+        assertEq(creator.balance, beforeCreatorBalance + creatorRewardsBalance);
+        assertEq(protocolRewards.totalSupply(), beforeTotalSupply - creatorRewardsBalance);
+    }
+
     function testRevert_InvalidWithdrawToAddress() public {
         uint256 creatorRewardsBalance = protocolRewards.balanceOf(creator);
 
@@ -63,6 +76,18 @@ contract WithdrawTest is ProtocolRewardsTest {
         uint256 creatorRewardsBalance = protocolRewards.balanceOf(creator);
 
         protocolRewards.withdrawFor(creator, creatorRewardsBalance);
+
+        assertEq(creator.balance, beforeCreatorBalance + creatorRewardsBalance);
+        assertEq(protocolRewards.totalSupply(), beforeTotalSupply - creatorRewardsBalance);
+    }
+
+    function testWithdrawForFullBalance() public {
+        uint256 beforeCreatorBalance = creator.balance;
+        uint256 beforeTotalSupply = protocolRewards.totalSupply();
+
+        uint256 creatorRewardsBalance = protocolRewards.balanceOf(creator);
+
+        protocolRewards.withdrawFor(creator, 0);
 
         assertEq(creator.balance, beforeCreatorBalance + creatorRewardsBalance);
         assertEq(protocolRewards.totalSupply(), beforeTotalSupply - creatorRewardsBalance);
@@ -100,6 +125,29 @@ contract WithdrawTest is ProtocolRewardsTest {
         uint256 beforeTotalSupply = protocolRewards.totalSupply();
 
         protocolRewards.withdrawWithSig(creator, creator, creatorRewardsBalance, deadline, v, r, s);
+
+        assertEq(creator.balance, beforeCreatorBalance + creatorRewardsBalance);
+        assertEq(protocolRewards.totalSupply(), beforeTotalSupply - creatorRewardsBalance);
+    }
+
+    function testWithdrawWithSigFullBalance() public {
+        uint256 creatorRewardsBalance = protocolRewards.balanceOf(creator);
+
+        (, uint256 creatorPrivateKey) = makeAddrAndKey("creator");
+
+        uint256 nonce = protocolRewards.nonces(creator);
+        uint256 deadline = block.timestamp + 1 days;
+
+        bytes32 withdrawHash = keccak256(abi.encode(protocolRewards.WITHDRAW_TYPEHASH(), creator, creator, 0, nonce, deadline));
+
+        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", getDomainSeparator(), withdrawHash));
+
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(creatorPrivateKey, digest);
+
+        uint256 beforeCreatorBalance = creator.balance;
+        uint256 beforeTotalSupply = protocolRewards.totalSupply();
+
+        protocolRewards.withdrawWithSig(creator, creator, 0, deadline, v, r, s);
 
         assertEq(creator.balance, beforeCreatorBalance + creatorRewardsBalance);
         assertEq(protocolRewards.totalSupply(), beforeTotalSupply - creatorRewardsBalance);
