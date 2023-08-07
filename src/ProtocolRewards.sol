@@ -147,7 +147,7 @@ contract ProtocolRewards is Enjoy, IProtocolRewards, EIP712 {
 
     /// @notice Withdraw protocol rewards
     /// @param to Withdraws from msg.sender to this address
-    /// @param amount amount to withdraw
+    /// @param amount Amount to withdraw (0 for total balance)
     function withdraw(address to, uint256 amount) external {
         if (to == address(0)) {
             revert ADDRESS_ZERO();
@@ -157,6 +157,10 @@ contract ProtocolRewards is Enjoy, IProtocolRewards, EIP712 {
 
         if (amount > balanceOf[owner]) {
             revert INVALID_WITHDRAW();
+        }
+
+        if (amount == 0) {
+            amount = balanceOf[owner];
         }
 
         balanceOf[owner] -= amount;
@@ -172,7 +176,7 @@ contract ProtocolRewards is Enjoy, IProtocolRewards, EIP712 {
 
     /// @notice Withdraw rewards on behalf of an address
     /// @param to The address to withdraw for
-    /// @param amount The amount to withdraw
+    /// @param amount The amount to withdraw (0 for total balance)
     function withdrawFor(address to, uint256 amount) external {
         if (to == address(0)) {
             revert ADDRESS_ZERO();
@@ -180,6 +184,10 @@ contract ProtocolRewards is Enjoy, IProtocolRewards, EIP712 {
 
         if (amount > balanceOf[to]) {
             revert INVALID_WITHDRAW();
+        }
+
+        if (amount == 0) {
+            amount = balanceOf[to];
         }
 
         balanceOf[to] -= amount;
@@ -196,7 +204,7 @@ contract ProtocolRewards is Enjoy, IProtocolRewards, EIP712 {
     /// @notice Execute a withdraw of protocol rewards via signature
     /// @param from Withdraw from this address
     /// @param to Withdraw to this address
-    /// @param amount Amount to withdraw
+    /// @param amount Amount to withdraw (0 for total balance)
     /// @param deadline Deadline for the signature to be valid
     /// @param v V component of signature
     /// @param r R component of signature
@@ -226,6 +234,10 @@ contract ProtocolRewards is Enjoy, IProtocolRewards, EIP712 {
 
         if (amount > balanceOf[from]) {
             revert INVALID_WITHDRAW();
+        }
+
+        if (amount == 0) {
+            amount = balanceOf[from];
         }
 
         balanceOf[from] -= amount;
