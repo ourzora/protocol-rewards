@@ -8,9 +8,19 @@ This repository features:
 
 Documentation is available at [docs.zora.co](https://docs.zora.co).
 
-# Deployed Addresses
+## Deployed Addresses
 
-v1.1 is deterministically deployed at 0x7777777F279eba3d3Ad8F4E708545291A6fDBA8B.
+`ProtocolRewards` v1.1 is deterministically deployed at 0x7777777F279eba3d3Ad8F4E708545291A6fDBA8B.
+
+Current Supported Chains:
+- Zora Mainnet
+- Zora Goerli
+- Ethereum Mainnet
+- Ethereum Goerli
+- OP Mainnet
+- OP Goerli
+- Base Mainnet
+- Base Goerli
 
 ## Install
 
