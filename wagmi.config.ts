@@ -6,14 +6,14 @@ export default defineConfig({
     {
       name: 'ProtocolRewards',
       address: {
-        1: "0x7777777A456fF23D9b6851184472c08FBDa73e32",
-        5: "0x7777777A456fF23D9b6851184472c08FBDa73e32",
-        10: "0x7777777A456fF23D9b6851184472c08FBDa73e32",
-        420: "0x7777777A456fF23D9b6851184472c08FBDa73e32",
-        999: "0x7777777A456fF23D9b6851184472c08FBDa73e32",
-        84531: "0x7777777A456fF23D9b6851184472c08FBDa73e32",
-        8453: "0x7777777A456fF23D9b6851184472c08FBDa73e32",
-        7777777: "0x7777777A456fF23D9b6851184472c08FBDa73e32",
+        1: "0x7777777F279eba3d3Ad8F4E708545291A6fDBA8B",
+        5: "0x7777777F279eba3d3Ad8F4E708545291A6fDBA8B",
+        10: "0x7777777F279eba3d3Ad8F4E708545291A6fDBA8B",
+        420: "0x7777777F279eba3d3Ad8F4E708545291A6fDBA8B",
+        999: "0x7777777F279eba3d3Ad8F4E708545291A6fDBA8B",
+        84531: "0x7777777F279eba3d3Ad8F4E708545291A6fDBA8B",
+        8453: "0x7777777F279eba3d3Ad8F4E708545291A6fDBA8B",
+        7777777: "0x7777777F279eba3d3Ad8F4E708545291A6fDBA8B",
       },
       abi: [
         {
@@ -443,6 +443,24 @@ export default defineConfig({
             }
           ],
           "name": "withdraw",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "withdrawFor",
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
