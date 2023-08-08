@@ -4,10 +4,9 @@
   "repository": "https://github.com/ourzora/protocol-rewards.git",
   "license": "MIT",
   "files": [
-    "dist/"
+    "src/"
   ],
   "scripts": {
-    "prepack": "mkdir -p dist && cp -r src/ dist/contracts && cp -r out/ dist/artifacts/",
     "prettier:check": "prettier --check 'src/**/*.sol' 'test/**/*.sol' 'script/**/*.sol'",
     "prettier": "prettier --write 'src/**/*.sol' 'test/**/*.sol' 'script/**/*.sol'"
   },
