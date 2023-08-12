@@ -59,23 +59,18 @@ contract Handler is CommonBase, StdCheats, StdUtils {
     function deposit(uint256 amount) public validateActor(msg.sender) createActor(msg.sender) {
         amount = bound(amount, 0, address(this).balance);
 
-        (bool success,) = currentActor.call{ value: amount }("");
+        (bool success, ) = currentActor.call{value: amount}("");
         if (!success) {
             return;
         }
 
         vm.prank(currentActor);
-        rewards.deposit{ value: amount }(currentActor, "", "");
+        rewards.deposit{value: amount}(currentActor, "", "");
 
         ghost_depositSum += amount;
     }
 
-    function withdraw(uint256 actorSeed, uint256 amount)
-        public
-        validateActor(msg.sender)
-        useActor(actorSeed)
-        validateWithdraw
-    {
+    function withdraw(uint256 actorSeed, uint256 amount) public validateActor(msg.sender) useActor(actorSeed) validateWithdraw {
         amount = bound(amount, 0, rewards.balanceOf(currentActor));
 
         amount == 0 ? ghost_withdrawSum += rewards.balanceOf(currentActor) : ghost_withdrawSum += amount;

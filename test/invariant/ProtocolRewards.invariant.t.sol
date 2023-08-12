@@ -21,7 +21,7 @@ contract ProtocolRewardsInvariantTest is ProtocolRewardsTest {
         targetSelectors[0] = Handler.deposit.selector;
         targetSelectors[1] = Handler.withdraw.selector;
 
-        targetSelector(FuzzSelector({ addr: address(handler), selectors: targetSelectors }));
+        targetSelector(FuzzSelector({addr: address(handler), selectors: targetSelectors}));
 
         excludeSender(address(handler));
         excludeSender(address(protocolRewards));
