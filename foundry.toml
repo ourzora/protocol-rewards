@@ -28,4 +28,10 @@ line_length = 120
 quote_style = "double"
 tab_width = 4
 
+[invariant]
+call_override = false
+depth = 20
+fail_on_revert = true
+runs = 1000
+
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
