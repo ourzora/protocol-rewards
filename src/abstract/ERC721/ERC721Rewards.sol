@@ -8,7 +8,15 @@ import {RewardSplits} from "../RewardSplits.sol";
 abstract contract ERC721Rewards is RewardSplits {
     constructor(address _protocolRewards, address _zoraRewardRecipient) payable RewardSplits(_protocolRewards, _zoraRewardRecipient) {}
 
-    function _handleRewards(uint256 msgValue, uint256 numTokens, uint256 salePrice, address creator, address createReferral, address mintReferral) internal {
+    function _handleRewards(
+        uint256 msgValue,
+        uint256 numTokens,
+        uint256 salePrice,
+        address creator,
+        address createReferral,
+        address mintReferral,
+        address firstMinter
+    ) internal {
         uint256 totalReward = computeTotalReward(numTokens);
 
         if (salePrice == 0) {
@@ -16,7 +24,7 @@ abstract contract ERC721Rewards is RewardSplits {
                 revert INVALID_ETH_AMOUNT();
             }
 
-            _depositFreeMintRewards(totalReward, numTokens, creator, createReferral, mintReferral);
+            _depositFreeMintRewards(totalReward, numTokens, creator, createReferral, mintReferral, firstMinter);
         } else {
             uint256 totalSale = numTokens * salePrice;
 
@@ -24,7 +32,7 @@ abstract contract ERC721Rewards is RewardSplits {
                 revert INVALID_ETH_AMOUNT();
             }
 
-            _depositPaidMintRewards(totalReward, numTokens, creator, createReferral, mintReferral);
+            _depositPaidMintRewards(totalReward, numTokens, createReferral, mintReferral, firstMinter);
         }
     }
 }

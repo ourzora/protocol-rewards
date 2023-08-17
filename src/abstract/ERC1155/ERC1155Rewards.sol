@@ -13,18 +13,19 @@ abstract contract ERC1155Rewards is RewardSplits {
         uint256 numTokens,
         address creator,
         address createReferral,
-        address mintReferral
+        address mintReferral,
+        address firstMinter
     ) internal returns (uint256) {
         uint256 totalReward = computeTotalReward(numTokens);
 
         if (msgValue < totalReward) {
             revert INVALID_ETH_AMOUNT();
         } else if (msgValue == totalReward) {
-            _depositFreeMintRewards(totalReward, numTokens, creator, createReferral, mintReferral);
+            _depositFreeMintRewards(totalReward, numTokens, creator, createReferral, mintReferral, firstMinter);
 
             return 0;
         } else {
-            _depositPaidMintRewards(totalReward, numTokens, creator, createReferral, mintReferral);
+            _depositPaidMintRewards(totalReward, numTokens, createReferral, mintReferral, firstMinter);
 
             unchecked {
                 return msgValue - totalReward;
