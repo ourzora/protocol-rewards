@@ -28,9 +28,10 @@ contract ERC1155RewardsTest is ProtocolRewardsTest {
         RewardsSettings memory settings = mockERC1155.computeFreeMintRewards(numTokens);
 
         assertEq(protocolRewards.totalSupply(), totalReward);
-        assertEq(protocolRewards.balanceOf(creator), settings.creatorReward + settings.firstMinterReward);
+        assertEq(protocolRewards.balanceOf(creator), settings.creatorReward);
         assertEq(protocolRewards.balanceOf(createReferral), settings.createReferralReward);
         assertEq(protocolRewards.balanceOf(mintReferral), settings.mintReferralReward);
+        assertEq(protocolRewards.balanceOf(collector), settings.firstMinterReward);
         assertEq(protocolRewards.balanceOf(zora), settings.zoraReward);
     }
 
@@ -52,9 +53,9 @@ contract ERC1155RewardsTest is ProtocolRewardsTest {
         RewardsSettings memory settings = mockERC1155.computePaidMintRewards(numTokens);
 
         assertEq(protocolRewards.totalSupply(), totalReward);
-        assertEq(protocolRewards.balanceOf(creator), settings.firstMinterReward);
         assertEq(protocolRewards.balanceOf(createReferral), settings.createReferralReward);
         assertEq(protocolRewards.balanceOf(mintReferral), settings.mintReferralReward);
+        assertEq(protocolRewards.balanceOf(collector), settings.firstMinterReward);
         assertEq(protocolRewards.balanceOf(zora), settings.zoraReward);
     }
 
@@ -73,7 +74,8 @@ contract ERC1155RewardsTest is ProtocolRewardsTest {
         RewardsSettings memory settings = mockERC1155.computeFreeMintRewards(numTokens);
 
         assertEq(protocolRewards.totalSupply(), totalReward);
-        assertEq(protocolRewards.balanceOf(creator), settings.creatorReward + settings.firstMinterReward);
+        assertEq(protocolRewards.balanceOf(creator), settings.creatorReward);
+        assertEq(protocolRewards.balanceOf(collector), settings.firstMinterReward);
         assertEq(protocolRewards.balanceOf(zora), settings.zoraReward + settings.mintReferralReward + settings.createReferralReward);
     }
 
@@ -97,7 +99,7 @@ contract ERC1155RewardsTest is ProtocolRewardsTest {
         RewardsSettings memory settings = mockERC1155.computePaidMintRewards(numTokens);
 
         assertEq(protocolRewards.totalSupply(), totalReward);
-        assertEq(protocolRewards.balanceOf(creator), settings.firstMinterReward);
+        assertEq(protocolRewards.balanceOf(collector), settings.firstMinterReward);
         assertEq(protocolRewards.balanceOf(zora), settings.zoraReward + settings.mintReferralReward + settings.createReferralReward);
     }
 

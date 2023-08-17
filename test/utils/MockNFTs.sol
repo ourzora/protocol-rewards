@@ -29,7 +29,9 @@ contract MockERC721 is ERC721, ERC721Rewards, ERC721RewardsStorageV1 {
     }
 
     function mintWithRewards(address to, uint256 numTokens, address mintReferral) external payable {
-        _handleRewards(msg.value, numTokens, salePrice, creator != address(0) ? creator : address(this), createReferral, mintReferral);
+        if (firstMinter == address(0)) firstMinter = to;
+
+        _handleRewards(msg.value, numTokens, salePrice, creator != address(0) ? creator : address(this), createReferral, mintReferral, firstMinter);
 
         for (uint256 i; i < numTokens; ++i) {
             _mint(to, currentTokenId++);
@@ -58,7 +60,9 @@ contract MockERC1155 is ERC1155, ERC1155Rewards, ERC1155RewardsStorageV1 {
     }
 
     function mintWithRewards(address to, uint256 tokenId, uint256 numTokens, address mintReferral) external payable {
-        uint256 remainingValue = _handleRewardsAndGetValueSent(msg.value, numTokens, creator, createReferrals[tokenId], mintReferral);
+        if (firstMinters[tokenId] == address(0)) firstMinters[tokenId] = to;
+
+        uint256 remainingValue = _handleRewardsAndGetValueSent(msg.value, numTokens, creator, createReferrals[tokenId], mintReferral, firstMinters[tokenId]);
 
         uint256 expectedRemainingValue = salePrice * numTokens;
 
