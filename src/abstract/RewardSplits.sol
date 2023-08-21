@@ -69,7 +69,14 @@ abstract contract RewardSplits {
             });
     }
 
-    function _depositFreeMintRewards(uint256 totalReward, uint256 numTokens, address creator, address createReferral, address mintReferral) internal {
+    function _depositFreeMintRewards(
+        uint256 totalReward,
+        uint256 numTokens,
+        address creator,
+        address createReferral,
+        address mintReferral,
+        address firstMinter
+    ) internal {
         RewardsSettings memory settings = computeFreeMintRewards(numTokens);
 
         if (createReferral == address(0)) {
@@ -87,14 +94,14 @@ abstract contract RewardSplits {
             settings.createReferralReward,
             mintReferral,
             settings.mintReferralReward,
-            creator,
+            firstMinter,
             settings.firstMinterReward,
             zoraRewardRecipient,
             settings.zoraReward
         );
     }
 
-    function _depositPaidMintRewards(uint256 totalReward, uint256 numTokens, address creator, address createReferral, address mintReferral) internal {
+    function _depositPaidMintRewards(uint256 totalReward, uint256 numTokens, address createReferral, address mintReferral, address firstMinter) internal {
         RewardsSettings memory settings = computePaidMintRewards(numTokens);
 
         if (createReferral == address(0)) {
@@ -112,7 +119,7 @@ abstract contract RewardSplits {
             settings.createReferralReward,
             mintReferral,
             settings.mintReferralReward,
-            creator,
+            firstMinter,
             settings.firstMinterReward,
             zoraRewardRecipient,
             settings.zoraReward
