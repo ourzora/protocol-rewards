@@ -18,6 +18,11 @@ abstract contract ERC1155Rewards is RewardSplits {
     ) internal returns (uint256) {
         uint256 totalReward = computeTotalReward(numTokens);
 
+        // If we have no first minter, first minter should be the creator.
+        if (firstMinter == address(0)) {
+            firstMinter = creator;
+        }
+
         if (msgValue < totalReward) {
             revert INVALID_ETH_AMOUNT();
         } else if (msgValue == totalReward) {
