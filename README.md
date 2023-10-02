@@ -8,6 +8,10 @@ This repository features:
 
 Documentation is available at [docs.zora.co](https://docs.zora.co).
 
+## Implementation Caveats
+
+The `ProtocolRewards` contract has a implementation caveat. If you send any value to a zero (`address(0)`) address in `depositRewards`, that value is implicitly burnt by being locked in the contract at the zero address. The function will not revert or redirect those funds as currently designed. We may re-visit this design in the future but for the release of  v1.1 this is the current and expected behavior.
+
 ## Deployed Addresses
 
 `ProtocolRewards` v1.1 is deterministically deployed at 0x7777777F279eba3d3Ad8F4E708545291A6fDBA8B.
